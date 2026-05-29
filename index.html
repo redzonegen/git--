@@ -843,6 +843,10 @@
     .bviz-step-tag.active { background:#0f172a; color:#fff; border-color:#0f172a; }
     .bviz-step-tag.done { border-color:#94a3b8; color:#475569; background:#fff; }
     .bviz-hint-bar { text-align:center; padding:2px 0 4px; font-size:10px; color:#cbd5e1; flex-shrink:0; background:#f8fafc; }
+    .bviz-scenario-tabs { display:flex; gap:6px; padding:8px 12px 5px; flex-shrink:0; background:#fff; border-bottom:1px solid #f1f5f9; }
+    .bviz-tab { padding:5px 14px; border:1.5px solid #e2e8f0; border-radius:20px; font-size:11px; font-weight:600; cursor:pointer; background:#fff; color:#64748b; transition:all 0.15s; }
+    .bviz-tab:hover { background:#f1f5f9; border-color:#94a3b8; }
+    .bviz-tab.active { background:#0f172a; color:#fff; border-color:#0f172a; }
 
     @media (max-width: 480px) {
       .slide-main        { padding: 16px 18px 12px; }
@@ -2380,37 +2384,398 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
         tags: [{text:'HEAD→main', x:467, y:102, col:'#f59e0b'}],
         note: "🟠 C4'・C5' はオレンジ = rebase で植え替えられたコミット。内容は同じだがハッシュが変わる。",
       },
+      {
+        cmd: 'git stash',
+        btn: '⑧ stash 退避',
+        title: '⑧ git stash — 作業を一時退避',
+        desc: '途中の変更（WIP）を stash に退避。作業ディレクトリがクリーンになり、ブランチを自由に切り替えられる。',
+        tracks: ['main'],
+        commits: [
+          {id:'C1', x:80,  y:110, col:'#2563eb'},
+          {id:'C2', x:185, y:110, col:'#2563eb'},
+          {id:'C3', x:290, y:110, col:'#2563eb'},
+          {id:'WIP',x:420, y:110, col:'#f59e0b', ghost:true},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'WIP',ghost:true}],
+        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        note: '退避後は作業ディレクトリがクリーンになる。複数回 stash でスタック管理可能（stash@{0}, stash@{1}...）。',
+      },
+      {
+        cmd: 'git stash pop',
+        btn: '⑨ stash pop',
+        title: '⑨ git stash pop — 退避を復元',
+        desc: 'stash pop で退避した変更を作業ディレクトリに復元。スタックから削除される。',
+        tracks: ['main'],
+        commits: [
+          {id:'C1', x:80,  y:110, col:'#2563eb'},
+          {id:'C2', x:185, y:110, col:'#2563eb'},
+          {id:'C3', x:290, y:110, col:'#2563eb'},
+          {id:'WIP',x:420, y:110, col:'#f59e0b', ghost:true, isNew:true},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'WIP',ghost:true}],
+        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        note: 'apply との違い：apply はスタックに残す。pop は取り出して削除。コンフリクト時は手動解決が必要。',
+      },
+      {
+        cmd: 'git reset --soft HEAD~1',
+        btn: '⑩ reset --soft',
+        title: '⑩ git reset --soft — HEAD を1つ戻す（変更をステージに保持）',
+        desc: 'HEAD を C3 に戻す。C4 の変更はステージングエリアに残るため、そのまま再コミットできる。',
+        tracks: ['main'],
+        commits: [
+          {id:'C1', x:80,  y:110, col:'#2563eb'},
+          {id:'C2', x:185, y:110, col:'#2563eb'},
+          {id:'C3', x:290, y:110, col:'#2563eb'},
+          {id:'C4', x:400, y:110, col:'#2563eb', ghost:true},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4',ghost:true}],
+        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        note: '--soft: ステージに保持 ／ --mixed（デフォルト）: 作業ディレクトリに保持 ／ --hard: 完全削除',
+      },
+      {
+        cmd: 'git reset --hard HEAD~1',
+        btn: '⑪ reset --hard',
+        title: '⑪ git reset --hard — HEAD を戻す（変更を完全破棄）',
+        desc: 'C4 への変更がすべて破棄される。ファイルも C3 の状態に戻る。',
+        tracks: ['main'],
+        commits: [
+          {id:'C1', x:80,  y:110, col:'#2563eb'},
+          {id:'C2', x:185, y:110, col:'#2563eb'},
+          {id:'C3', x:290, y:110, col:'#2563eb'},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
+        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        note: '⚠️ --hard は取り消せない。push 済みコミットへの使用は危険。安全に戻すには git revert を使う。',
+      },
+      {
+        cmd: 'git revert HEAD',
+        btn: '⑫ revert',
+        title: '⑫ git revert — コミットを安全に取り消す',
+        desc: '取り消し用の新コミット Rv を作成。C4 はそのまま残り、Rv が変更を元に戻す。履歴が保たれる。',
+        tracks: ['main'],
+        commits: [
+          {id:'C1', x:65,  y:110, col:'#2563eb'},
+          {id:'C2', x:160, y:110, col:'#2563eb'},
+          {id:'C3', x:255, y:110, col:'#2563eb'},
+          {id:'C4', x:355, y:110, col:'#2563eb'},
+          {id:'Rv', x:480, y:110, col:'#10b981', isNew:true},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'Rv'}],
+        tags: [{text:'HEAD→main', x:439, y:102, col:'#f59e0b'}],
+        note: 'reset と違い revert は履歴を書き換えない。push 済みコミットの取り消しに最適。',
+      },
+      {
+        cmd: 'git cherry-pick <hash>',
+        btn: '⑬ cherry-pick',
+        title: '⑬ git cherry-pick — 特定コミットだけ取り込む',
+        desc: 'feature の C4 だけ main に取り込む。C4\' として追加（内容は同じだがハッシュが変わる）。',
+        tracks: ['main', 'feature'],
+        commits: [
+          {id:'C1',  x:65,  y:110, col:'#2563eb'},
+          {id:'C2',  x:160, y:110, col:'#2563eb'},
+          {id:'C3',  x:255, y:110, col:'#2563eb'},
+          {id:"C4'", x:385, y:110, col:'#f97316', isNew:true},
+          {id:'C4',  x:355, y:175, col:'#a855f7'},
+          {id:'C5',  x:480, y:175, col:'#a855f7'},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:"C4'"},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
+        tags: [
+          {text:'HEAD→main', x:344, y:102, col:'#f59e0b'},
+          {text:'feature',    x:447, y:168, col:'#a855f7'},
+        ],
+        note: "🟠 C4' = C4 の内容をコピーした別コミット（ハッシュは異なる）。マージとは違い、feature との結合点は作らない。",
+      },
+    ];
+
+    const remoteSteps = [
+      {
+        cmd: null, btn: '① clone 直後', title: '① clone 直後の状態',
+        desc: 'git clone 直後。ローカルとリモートは完全に同じ状態。HEAD は main を指している。',
+        local: {
+          commits: [{id:'C1',x:70,y:125,col:'#2563eb'},{id:'C2',x:165,y:125,col:'#2563eb'},{id:'C3',x:260,y:125,col:'#2563eb'}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
+          tags: [{text:'HEAD→main',x:219,y:88,col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [{id:'C1',x:450,y:125,col:'#2563eb'},{id:'C2',x:545,y:125,col:'#2563eb'},{id:'C3',x:640,y:125,col:'#2563eb'}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
+          tags: [{text:'main',x:618,y:88,col:'#3b82f6'}],
+        },
+        arrow: null,
+      },
+      {
+        cmd: 'git commit -m "add feature"', btn: '② ローカル commit', title: '② ローカルに新しいコミット',
+        desc: 'ローカルで C4 をコミット。リモートはまだ C3 のまま。push するまでリモートには反映されない。',
+        local: {
+          commits: [{id:'C1',x:45,y:125,col:'#2563eb'},{id:'C2',x:120,y:125,col:'#2563eb'},{id:'C3',x:195,y:125,col:'#2563eb'},{id:'C4',x:285,y:125,col:'#2563eb',isNew:true}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+          tags: [{text:'HEAD→main',x:244,y:88,col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [{id:'C1',x:450,y:125,col:'#2563eb'},{id:'C2',x:545,y:125,col:'#2563eb'},{id:'C3',x:640,y:125,col:'#2563eb'}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
+          tags: [{text:'main',x:618,y:88,col:'#3b82f6'}],
+        },
+        arrow: {dir:'right',label:'未 push',col:'#94a3b8'},
+      },
+      {
+        cmd: 'git push origin main', btn: '③ git push', title: '③ git push でリモートに送る',
+        desc: 'git push により C4 がリモートに送信。origin/main が C4 に進んだ。ローカルとリモートが同期。',
+        local: {
+          commits: [{id:'C1',x:45,y:125,col:'#2563eb'},{id:'C2',x:120,y:125,col:'#2563eb'},{id:'C3',x:195,y:125,col:'#2563eb'},{id:'C4',x:285,y:125,col:'#2563eb'}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+          tags: [{text:'HEAD→main',x:244,y:88,col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [{id:'C1',x:435,y:125,col:'#2563eb'},{id:'C2',x:510,y:125,col:'#2563eb'},{id:'C3',x:585,y:125,col:'#2563eb'},{id:'C4',x:670,y:125,col:'#10b981',isNew:true}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+          tags: [{text:'main',x:648,y:88,col:'#3b82f6'}],
+        },
+        arrow: {dir:'right',label:'push →',col:'#2563eb'},
+      },
+      {
+        cmd: '（チームメンバーが push）', btn: '④ 仲間が push', title: '④ チームメンバーがリモートに push',
+        desc: '仲間が C5 をリモートに push した。ローカルはまだ C4 のまま。ローカルが遅れた状態。',
+        local: {
+          commits: [{id:'C1',x:45,y:125,col:'#2563eb'},{id:'C2',x:120,y:125,col:'#2563eb'},{id:'C3',x:195,y:125,col:'#2563eb'},{id:'C4',x:285,y:125,col:'#2563eb'}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+          tags: [{text:'HEAD→main',x:244,y:88,col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [{id:'C1',x:415,y:125,col:'#2563eb'},{id:'C2',x:483,y:125,col:'#2563eb'},{id:'C3',x:551,y:125,col:'#2563eb'},{id:'C4',x:619,y:125,col:'#2563eb'},{id:'C5',x:687,y:125,col:'#a855f7',isNew:true}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
+          tags: [{text:'main',x:665,y:88,col:'#3b82f6'}],
+        },
+        arrow: {dir:'left',label:'← 遅れ',col:'#ef4444'},
+      },
+      {
+        cmd: 'git fetch origin', btn: '⑤ git fetch', title: '⑤ git fetch でリモート情報を取得',
+        desc: 'fetch でリモートの情報をローカルに取り込む。origin/main が C5 に更新。ただし作業中の main はまだ C4。',
+        local: {
+          commits: [{id:'C1',x:38,y:125,col:'#2563eb'},{id:'C2',x:103,y:125,col:'#2563eb'},{id:'C3',x:168,y:125,col:'#2563eb'},{id:'C4',x:233,y:125,col:'#2563eb'},{id:'C5',x:290,y:125,col:'#a855f7',ghost:true}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5',ghost:true}],
+          tags: [{text:'HEAD→main',x:192,y:75,col:'#f59e0b'},{text:'o/main',x:261,y:97,col:'#10b981'}],
+        },
+        remote: {
+          commits: [{id:'C1',x:415,y:125,col:'#2563eb'},{id:'C2',x:483,y:125,col:'#2563eb'},{id:'C3',x:551,y:125,col:'#2563eb'},{id:'C4',x:619,y:125,col:'#2563eb'},{id:'C5',x:687,y:125,col:'#a855f7'}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
+          tags: [{text:'main',x:665,y:88,col:'#3b82f6'}],
+        },
+        arrow: {dir:'left',label:'← fetch',col:'#0891b2'},
+      },
+      {
+        cmd: 'git pull origin main', btn: '⑥ git pull', title: '⑥ git pull でローカルを最新に',
+        desc: 'pull = fetch + merge。ローカルの main が C5 に進み、リモートと同期した。',
+        local: {
+          commits: [{id:'C1',x:38,y:125,col:'#2563eb'},{id:'C2',x:103,y:125,col:'#2563eb'},{id:'C3',x:168,y:125,col:'#2563eb'},{id:'C4',x:233,y:125,col:'#2563eb'},{id:'C5',x:290,y:125,col:'#a855f7',isNew:true}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
+          tags: [{text:'HEAD→main',x:249,y:75,col:'#f59e0b'},{text:'o/main',x:261,y:97,col:'#10b981'}],
+        },
+        remote: {
+          commits: [{id:'C1',x:415,y:125,col:'#2563eb'},{id:'C2',x:483,y:125,col:'#2563eb'},{id:'C3',x:551,y:125,col:'#2563eb'},{id:'C4',x:619,y:125,col:'#2563eb'},{id:'C5',x:687,y:125,col:'#a855f7'}],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
+          tags: [{text:'main',x:665,y:88,col:'#3b82f6'}],
+        },
+        arrow: {dir:'left',label:'← pull',col:'#10b981'},
+      },
+      {
+        cmd: 'git push -u origin feature',
+        btn: '⑦ feature push',
+        title: '⑦ feature ブランチをリモートに push',
+        desc: 'ローカルの feature ブランチをリモートに初回 push。-u フラグで追跡ブランチ（origin/feature）を設定。',
+        local: {
+          commits: [
+            {id:'C1', x:45,  y:125, col:'#2563eb'},
+            {id:'C2', x:120, y:125, col:'#2563eb'},
+            {id:'C3', x:195, y:125, col:'#2563eb'},
+            {id:'C4', x:270, y:125, col:'#a855f7'},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+          tags: [
+            {text:'main',          x:173, y:68, col:'#3b82f6'},
+            {text:'HEAD→feature',  x:218, y:90, col:'#f59e0b'},
+          ],
+        },
+        remote: {
+          commits: [
+            {id:'C1', x:430, y:125, col:'#2563eb'},
+            {id:'C2', x:505, y:125, col:'#2563eb'},
+            {id:'C3', x:580, y:125, col:'#2563eb'},
+            {id:'C4', x:665, y:125, col:'#a855f7', isNew:true},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+          tags: [
+            {text:'main',    x:558, y:68, col:'#3b82f6'},
+            {text:'feature', x:632, y:90, col:'#a855f7'},
+          ],
+        },
+        arrow: {dir:'right', label:'push feature →', col:'#a855f7'},
+      },
+      {
+        cmd: '（GitHub 上で PR をマージ）',
+        btn: '⑧ PR マージ',
+        title: '⑧ プルリクエストがリモートでマージされた',
+        desc: 'GitHub 上でレビューを経て PR がマージ。リモートの main に マージコミット M が追加された。',
+        local: {
+          commits: [
+            {id:'C1', x:45,  y:125, col:'#2563eb'},
+            {id:'C2', x:120, y:125, col:'#2563eb'},
+            {id:'C3', x:195, y:125, col:'#2563eb'},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
+          tags: [{text:'HEAD→main', x:154, y:88, col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [
+            {id:'C1', x:415, y:125, col:'#2563eb'},
+            {id:'C2', x:483, y:125, col:'#2563eb'},
+            {id:'C3', x:551, y:125, col:'#2563eb'},
+            {id:'C4', x:619, y:125, col:'#a855f7'},
+            {id:'M',  x:687, y:125, col:'#10b981', isNew:true},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'M'}],
+          tags: [{text:'main', x:665, y:88, col:'#3b82f6'}],
+        },
+        arrow: null,
+        note: 'ローカルはまだ古い状態。git pull でリモートの変更を取り込む必要がある。',
+      },
+      {
+        cmd: 'git pull origin main',
+        btn: '⑨ pull（PR後）',
+        title: '⑨ PR マージ後に git pull で同期',
+        desc: 'ローカルの main がリモートのマージコミット M に追いついた。ローカルとリモートが同期。',
+        local: {
+          commits: [
+            {id:'C1', x:38,  y:125, col:'#2563eb'},
+            {id:'C2', x:103, y:125, col:'#2563eb'},
+            {id:'C3', x:168, y:125, col:'#2563eb'},
+            {id:'C4', x:233, y:125, col:'#a855f7'},
+            {id:'M',  x:302, y:125, col:'#10b981', isNew:true},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'M'}],
+          tags: [{text:'HEAD→main', x:261, y:88, col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [
+            {id:'C1', x:415, y:125, col:'#2563eb'},
+            {id:'C2', x:483, y:125, col:'#2563eb'},
+            {id:'C3', x:551, y:125, col:'#2563eb'},
+            {id:'C4', x:619, y:125, col:'#a855f7'},
+            {id:'M',  x:687, y:125, col:'#10b981'},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'M'}],
+          tags: [{text:'main', x:665, y:88, col:'#3b82f6'}],
+        },
+        arrow: {dir:'left', label:'← pull', col:'#10b981'},
+      },
+      {
+        cmd: 'git push origin main',
+        btn: '⑩ push rejected',
+        title: '⑩ push が rejected — リモートが先に進んでいる',
+        desc: 'ローカルに C4 を追加して push しようとしたが、リモートにはすでに別の C4\' が存在。rejected される。',
+        local: {
+          commits: [
+            {id:'C1', x:45,  y:125, col:'#2563eb'},
+            {id:'C2', x:120, y:125, col:'#2563eb'},
+            {id:'C3', x:195, y:125, col:'#2563eb'},
+            {id:'C4', x:280, y:125, col:'#2563eb'},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+          tags: [{text:'HEAD→main', x:239, y:88, col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [
+            {id:'C1',  x:430, y:125, col:'#2563eb'},
+            {id:'C2',  x:505, y:125, col:'#2563eb'},
+            {id:'C3',  x:580, y:125, col:'#2563eb'},
+            {id:"C4'", x:665, y:125, col:'#a855f7'},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:"C4'"}],
+          tags: [{text:'main', x:635, y:88, col:'#3b82f6'}],
+        },
+        arrow: {dir:'right', label:'❌ rejected', col:'#ef4444'},
+        note: '解決策：git pull でリモートの変更を取り込み、マージ or rebase してから再度 push する。',
+      },
+      {
+        cmd: 'git pull --rebase && git push',
+        btn: '⑪ rebase + push',
+        title: '⑪ git pull --rebase → push で解決',
+        desc: 'pull --rebase でローカルの C4 をリモートの C4\' の上に植え替え。その後 push が成功する。',
+        local: {
+          commits: [
+            {id:'C1',  x:35,  y:125, col:'#2563eb'},
+            {id:'C2',  x:100, y:125, col:'#2563eb'},
+            {id:'C3',  x:165, y:125, col:'#2563eb'},
+            {id:"C4'", x:230, y:125, col:'#a855f7'},
+            {id:"C4",  x:295, y:125, col:'#f97316', isNew:true},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:"C4'"},{f:"C4'",t:'C4'}],
+          tags: [{text:'HEAD→main', x:254, y:88, col:'#f59e0b'}],
+        },
+        remote: {
+          commits: [
+            {id:'C1',  x:415, y:125, col:'#2563eb'},
+            {id:'C2',  x:478, y:125, col:'#2563eb'},
+            {id:'C3',  x:541, y:125, col:'#2563eb'},
+            {id:"C4'", x:604, y:125, col:'#a855f7'},
+            {id:'C4',  x:667, y:125, col:'#f97316', isNew:true},
+          ],
+          edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:"C4'"},{f:"C4'",t:'C4'}],
+          tags: [{text:'main', x:645, y:88, col:'#3b82f6'}],
+        },
+        arrow: {dir:'right', label:'push OK ✓', col:'#22c55e'},
+        note: "🟠 C4 はオレンジ = rebase で植え替えられたコミット（C4' の後に来る）。",
+      },
     ];
 
     let bvizStep = 0;
+    let bvizScenario = 'local';
 
+    function bvizSetScenario(s) { bvizScenario = s; bvizStep = 0; bvizRender(); }
     function bvizNav(d) {
-      bvizStep = Math.max(0, Math.min(bvizSteps.length - 1, bvizStep + d));
+      const steps = bvizScenario === 'remote' ? remoteSteps : bvizSteps;
+      bvizStep = Math.max(0, Math.min(steps.length - 1, bvizStep + d));
       bvizRender();
     }
     function bvizJump(idx) { bvizStep = idx; bvizRender(); }
     function bvizReset() { bvizStep = 0; bvizRender(); }
 
     function bvizRender() {
-      const step = bvizSteps[bvizStep];
+      const isRemote = bvizScenario === 'remote';
+      const steps = isRemote ? remoteSteps : bvizSteps;
+      const step = steps[bvizStep];
       const g = id => document.getElementById(id);
-      const sa = g('bviz-svg-area');    if (sa) sa.innerHTML = bvizSVG(step);
+      const sa = g('bviz-svg-area');    if (sa) sa.innerHTML = isRemote ? bvizRemoteSVG(step) : bvizSVG(step);
       const tb = g('bviz-title-bar');   if (tb) tb.textContent = step.title;
       const ct = g('bviz-cmd-text');    if (ct) ct.textContent = step.cmd ? ' ' + step.cmd : ' （初期状態）';
       const dt = g('bviz-desc-text');   if (dt) dt.textContent = step.desc;
       const nt = g('bviz-note');        if (nt) { nt.textContent = step.note || ''; nt.style.display = step.note ? '' : 'none'; }
       const pb = g('bviz-prev');        if (pb) pb.disabled = bvizStep === 0;
-      const nb = g('bviz-next');        if (nb) nb.disabled = bvizStep === bvizSteps.length - 1;
+      const nb = g('bviz-next');        if (nb) nb.disabled = bvizStep === steps.length - 1;
+      document.querySelectorAll('.bviz-tab').forEach(t => t.classList.toggle('active', t.dataset.scenario === bvizScenario));
+      const legend = g('bviz-legend');
+      if (legend) {
+        legend.innerHTML = isRemote
+          ? `<span class="bviz-leg bviz-leg-main">● コミット（ローカル）</span>
+             <span class="bviz-leg bviz-leg-head">▬ HEAD→main</span>
+             <span class="bviz-leg bviz-leg-merge">▬ origin/main</span>
+             <span class="bviz-leg bviz-leg-feature" style="opacity:0.5">● fetch 済み（未 merge）</span>`
+          : `<span class="bviz-leg bviz-leg-main">● main</span>
+             <span class="bviz-leg bviz-leg-feature">● feature</span>
+             <span class="bviz-leg bviz-leg-merge">● merge コミット</span>
+             <span class="bviz-leg bviz-leg-rebase">● rebase コミット</span>
+             <span class="bviz-leg bviz-leg-head">▬ HEAD（現在位置）</span>`;
+      }
       const dots = g('bviz-dots');
       if (dots) {
-        dots.innerHTML = bvizSteps.map((_, idx) => {
+        dots.innerHTML = steps.map((_, idx) => {
           const cls = idx === bvizStep ? 'active' : idx < bvizStep ? 'done' : '';
           return `<span class="bviz-dot${cls ? ' ' + cls : ''}" onclick="bvizJump(${idx})" title="ステップ ${idx + 1}"></span>`;
         }).join('');
       }
       const sb = g('bviz-step-bar');
       if (sb) {
-        sb.innerHTML = bvizSteps.map((s, idx) => {
+        sb.innerHTML = steps.map((s, idx) => {
           const cls = idx === bvizStep ? 'active' : idx < bvizStep ? 'done' : '';
           return `<button class="bviz-step-tag${cls ? ' ' + cls : ''}" onclick="bvizJump(${idx})">${s.btn}</button>`;
         }).join('');
@@ -2441,16 +2806,20 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
         const d = Math.sqrt(dx * dx + dy * dy);
         if (d < 1) return;
         const ux = dx / d, uy = dy / d;
+        const eAttr = e.ghost
+          ? `stroke="#475569" stroke-width="2" stroke-dasharray="4,3" opacity="0.4"`
+          : `stroke="#475569" stroke-width="2.5" stroke-linecap="round"`;
         s += `<line x1="${(f.x + ux * (R + 2)).toFixed(1)}" y1="${(f.y + uy * (R + 2)).toFixed(1)}" ` +
-          `x2="${(t.x - ux * (R + 2)).toFixed(1)}" y2="${(t.y - uy * (R + 2)).toFixed(1)}" ` +
-          `stroke="#475569" stroke-width="2.5" stroke-linecap="round"/>`;
+          `x2="${(t.x - ux * (R + 2)).toFixed(1)}" y2="${(t.y - uy * (R + 2)).toFixed(1)}" ${eAttr}/>`;
       });
 
       step.commits.forEach(c => {
+        const op = c.ghost ? '0.35' : '1';
         if (c.isNew) s += `<circle cx="${c.x}" cy="${c.y}" r="${R + 5}" fill="none" stroke="${c.col}" stroke-width="1.5" opacity="0.5"/>`;
-        s += `<circle cx="${c.x}" cy="${c.y}" r="${R}" fill="${c.col}"/>`;
+        s += `<circle cx="${c.x}" cy="${c.y}" r="${R}" fill="${c.col}" opacity="${op}"/>`;
+        if (c.ghost) s += `<circle cx="${c.x}" cy="${c.y}" r="${R}" fill="none" stroke="${c.col}" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>`;
         const fs = c.id.length > 2 ? '8' : '9.5';
-        s += `<text x="${c.x}" y="${c.y + 4}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" font-family="sans-serif">${c.id}</text>`;
+        s += `<text x="${c.x}" y="${c.y + 4}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" font-family="sans-serif" opacity="${op}">${c.id}</text>`;
       });
 
       (step.tags || []).forEach(tag => {
@@ -2462,6 +2831,75 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
       s += '</svg>';
       return s;
     }
+    function bvizRemoteSVG(step) {
+      const W = 720, H = 215, R = 13;
+      const LP = {x:5,  w:330};
+      const RP = {x:385, w:330};
+
+      let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">` +
+        `<rect width="${W}" height="${H}" rx="8" fill="#0f172a"/>`;
+
+      s += `<rect x="${LP.x}" y="8" width="${LP.w}" height="${H-16}" rx="8" fill="#172554" fill-opacity="0.5"/>`;
+      s += `<rect x="${RP.x}" y="8" width="${RP.w}" height="${H-16}" rx="8" fill="#052e16" fill-opacity="0.5"/>`;
+      s += `<text x="${LP.x+12}" y="27" font-size="11" font-weight="700" fill="#60a5fa" font-family="sans-serif">PC  ローカル</text>`;
+      s += `<text x="${RP.x+12}" y="27" font-size="11" font-weight="700" fill="#4ade80" font-family="sans-serif">Cloud  origin（GitHub）</text>`;
+      s += `<line x1="337" y1="12" x2="337" y2="${H-12}" stroke="#334155" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>`;
+      s += `<line x1="383" y1="12" x2="383" y2="${H-12}" stroke="#334155" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>`;
+
+      s += `<rect x="${LP.x+4}" y="108" width="${LP.w-8}" height="34" rx="17" fill="#2563eb" fill-opacity="0.10"/>`;
+      s += `<rect x="${RP.x+4}" y="108" width="${RP.w-8}" height="34" rx="17" fill="#2563eb" fill-opacity="0.10"/>`;
+
+      // draw panels (edges + commits + tags)
+      function drawPanel(data) {
+        const pos = {};
+        data.commits.forEach(c => { pos[c.id] = c; });
+        let ps = '';
+        (data.edges || []).forEach(e => {
+          const f = pos[e.f], t = pos[e.t]; if (!f || !t) return;
+          const dx = t.x-f.x, dy = t.y-f.y, d = Math.sqrt(dx*dx+dy*dy); if (d < 1) return;
+          const ux = dx/d, uy = dy/d;
+          const attrs = e.ghost
+            ? `stroke="#475569" stroke-width="2" stroke-dasharray="4,3" opacity="0.45"`
+            : `stroke="#475569" stroke-width="2.5" stroke-linecap="round"`;
+          ps += `<line x1="${(f.x+ux*(R+2)).toFixed(1)}" y1="${(f.y+uy*(R+2)).toFixed(1)}" x2="${(t.x-ux*(R+2)).toFixed(1)}" y2="${(t.y-uy*(R+2)).toFixed(1)}" ${attrs}/>`;
+        });
+        data.commits.forEach(c => {
+          const op = c.ghost ? '0.4' : '1';
+          if (c.isNew) ps += `<circle cx="${c.x}" cy="${c.y}" r="${R+5}" fill="none" stroke="${c.col}" stroke-width="1.5" opacity="0.5"/>`;
+          ps += `<circle cx="${c.x}" cy="${c.y}" r="${R}" fill="${c.col}" opacity="${op}"/>`;
+          const fs = c.id.length > 2 ? '7.5' : '9.5';
+          ps += `<text x="${c.x}" y="${c.y+4}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" font-family="sans-serif" opacity="${op}">${c.id}</text>`;
+        });
+        (data.tags || []).forEach(tag => {
+          const tw = Math.ceil(tag.text.length * 7.5 + 14);
+          ps += `<rect x="${tag.x}" y="${tag.y}" width="${tw}" height="17" rx="8" fill="${tag.col}" fill-opacity="0.2" stroke="${tag.col}" stroke-width="1.2"/>`;
+          ps += `<text x="${(tag.x+tw/2).toFixed(1)}" y="${tag.y+11}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${tag.col}" font-family="sans-serif">${tag.text}</text>`;
+        });
+        return ps;
+      }
+
+      s += drawPanel(step.local);
+      s += drawPanel(step.remote);
+
+      // center arrow
+      if (step.arrow) {
+        const ax = 360, ay = 125, col = step.arrow.col;
+        if (step.arrow.dir === 'right') {
+          s += `<polygon points="342,${ay-7} 378,${ay} 342,${ay+7}" fill="${col}" opacity="0.9"/>`;
+          s += `<line x1="337" y1="${ay}" x2="342" y2="${ay}" stroke="${col}" stroke-width="2.5"/>`;
+        } else if (step.arrow.dir === 'left') {
+          s += `<polygon points="378,${ay-7} 342,${ay} 378,${ay+7}" fill="${col}" opacity="0.9"/>`;
+          s += `<line x1="378" y1="${ay}" x2="383" y2="${ay}" stroke="${col}" stroke-width="2.5"/>`;
+        }
+        const lw = Math.ceil(step.arrow.label.length * 6.5 + 8);
+        s += `<rect x="${ax-lw/2}" y="${ay+13}" width="${lw}" height="14" rx="7" fill="${col}" fill-opacity="0.15"/>`;
+        s += `<text x="${ax}" y="${ay+23}" text-anchor="middle" font-size="8.5" font-weight="700" fill="${col}" font-family="sans-serif">${step.arrow.label}</text>`;
+      }
+
+      s += '</svg>';
+      return s;
+    }
+
     // ===== End Branch Visualization =====
 
     function render(i) {
@@ -2497,9 +2935,13 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
           <span class="slide-counter">${i} / ${total - 1}</span>
         </div>
         <div class="bviz-wrap">
+          <div class="bviz-scenario-tabs">
+            <button class="bviz-tab active" data-scenario="local" onclick="bvizSetScenario('local')">🌿 ローカル操作</button>
+            <button class="bviz-tab" data-scenario="remote" onclick="bvizSetScenario('remote')">🌐 リモート連携</button>
+          </div>
           <div class="bviz-title-bar" id="bviz-title-bar"></div>
           <div class="bviz-svg-area" id="bviz-svg-area"></div>
-          <div class="bviz-legend">
+          <div class="bviz-legend" id="bviz-legend">
             <span class="bviz-leg bviz-leg-main">● main</span>
             <span class="bviz-leg bviz-leg-feature">● feature</span>
             <span class="bviz-leg bviz-leg-merge">● merge コミット</span>
@@ -2552,8 +2994,9 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
 
     document.addEventListener('keydown', e => {
       const onBviz = S[cur] && S[cur].type === 'branch-viz';
-      if (onBviz && (e.key === 'ArrowRight' || e.key === 'ArrowDown') && bvizStep < bvizSteps.length - 1) { bvizNav(1); return; }
-      if (onBviz && (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   && bvizStep > 0)                   { bvizNav(-1); return; }
+      const bvizLen = (bvizScenario === 'remote' ? remoteSteps : bvizSteps).length;
+      if (onBviz && (e.key === 'ArrowRight' || e.key === 'ArrowDown') && bvizStep < bvizLen - 1) { bvizNav(1); return; }
+      if (onBviz && (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   && bvizStep > 0)           { bvizNav(-1); return; }
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nav(1);
       if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  nav(-1);
     });
