@@ -1,0 +1,2565 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git 学習資料</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+      background: #0f172a;
+      overflow: hidden;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* Title */
+    .slide-title {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+      text-align: center;
+      padding: 40px;
+    }
+
+    .slide-title .label {
+      color: #3b82f6;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    .slide-title h1 {
+      color: #f8fafc;
+      font-size: 52px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .slide-title .sub {
+      color: #64748b;
+      font-size: 15px;
+      margin-bottom: 60px;
+    }
+
+    .slide-title .hint {
+      color: #475569;
+      font-size: 12px;
+      animation: blink 2s ease-in-out infinite;
+    }
+
+    .slide-section {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 40px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #0f172a 100%);
+    }
+    .slide-section .sec-label {
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: #3b82f6; margin-bottom: 12px;
+    }
+    .slide-section h1 {
+      font-size: 42px; font-weight: 800;
+      color: #f1f5f9; margin-bottom: 12px; letter-spacing: -0.02em;
+    }
+    .slide-section .sec-desc {
+      font-size: 14px; color: #64748b;
+      max-width: 520px; line-height: 1.7; margin-bottom: 24px;
+    }
+    .sec-topics { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 600px; }
+    .sec-topic {
+      background: #1e293b; border: 1px solid #334155;
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 12px; color: #94a3b8;
+    }
+    .sec-adv-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #431407; border: 1px solid #f97316;
+      color: #fb923c; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; padding: 4px 14px;
+      border-radius: 20px; margin-bottom: 14px;
+    }
+    .slide-section.adv .sec-label { color: #f97316; }
+    .slide-section.adv h1 { color: #fed7aa; }
+    .slide-section.adv .sec-topic { border-color: #431407; color: #94a3b8; }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.3
+      }
+    }
+
+    /* Content slide */
+    .slide-content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+    }
+
+    .slide-header {
+      background: #0f172a;
+      padding: 10px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .section-badge {
+      font-size: 11px;
+      color: #fff;
+      background: #3b82f6;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .slide-counter {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .slide-main {
+      flex: 1;
+      padding: 32px 56px 20px;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .slide-main h2 {
+      font-size: 26px;
+      color: #0f172a;
+      font-weight: 700;
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .slide-main p {
+      color: #334155;
+      font-size: 14.5px;
+      line-height: 1.85;
+      margin-bottom: 10px;
+    }
+
+    .slide-main ul {
+      list-style: none;
+      margin: 6px 0 10px;
+    }
+
+    .slide-main li {
+      color: #334155;
+      font-size: 14.5px;
+      line-height: 1.8;
+      padding-left: 18px;
+      position: relative;
+      margin-bottom: 4px;
+    }
+
+    .slide-main li::before {
+      content: '▸';
+      position: absolute;
+      left: 0;
+      color: #3b82f6;
+    }
+
+    .term {
+      font-weight: 700;
+      color: #1d4ed8;
+      background: #eff6ff;
+      padding: 1px 5px;
+      border-radius: 3px;
+    }
+
+    .note {
+      background: #fef9c3;
+      border-left: 3px solid #f59e0b;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      color: #78350f;
+      margin-top: 10px;
+    }
+
+    /* Cheat sheet */
+    .cheatsheet {
+      background: #f8fafc;
+      border-top: 2px solid #e2e8f0;
+      flex-shrink: 0;
+    }
+
+    .cs-label {
+      background: #1e293b;
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 5px 24px;
+    }
+
+    .cs-body {
+      padding: 12px 24px 14px;
+      overflow-y: auto;
+      max-height: 190px;
+    }
+
+    .cs-body pre {
+      background: #0f172a;
+      color: #cbd5e1;
+      padding: 12px 16px;
+      border-radius: 7px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 12px;
+      line-height: 1.75;
+      overflow-x: auto;
+    }
+
+    .c {
+      color: #475569;
+    }
+
+    /* Nav */
+    .nav-prev,
+    .nav-next {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(15, 23, 42, 0.75);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    .nav-prev:hover,
+    .nav-next:hover {
+      background: rgba(59, 130, 246, 0.85);
+      border-color: #3b82f6;
+    }
+
+    .nav-prev {
+      left: 10px;
+    }
+
+    .nav-next {
+      right: 10px;
+    }
+
+    .nav-prev:disabled,
+    .nav-next:disabled {
+      opacity: 0.15;
+      cursor: not-allowed;
+    }
+
+    /* Progress */
+    .progress {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: #1e293b;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      transition: width 0.3s ease;
+    }
+
+    /* === Section 1 リッチレイアウト === */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .two-col>div {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .two-col>div h4 {
+      font-size: 13px;
+      color: #0f172a;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .two-col li {
+      font-size: 13px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 10px 0 0;
+    }
+
+    .card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .card .card-icon {
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .card h4 {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 3px;
+    }
+
+    .card p {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin: 0 0 12px;
+    }
+
+    .flow-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 10px 10px;
+      text-align: center;
+      flex: 1;
+    }
+
+    .fb-icon {
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .flow-box h4 {
+      font-size: 11.5px;
+      color: #e2e8f0;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .flow-box p {
+      font-size: 10.5px;
+      color: #94a3b8;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .flow-arrow {
+      color: #3b82f6;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .analogy {
+      background: #ecfdf5;
+      border-left: 3px solid #10b981;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 0 0 12px;
+    }
+
+    .analogy .analogy-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #059669;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .analogy p {
+      font-size: 13.5px;
+      color: #064e3b;
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    .setup-steps {
+      list-style: none;
+      margin: 8px 0;
+    }
+
+    .setup-steps li {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+
+    .ss-num {
+      background: #3b82f6;
+      color: white;
+      min-width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .ss-content h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 3px;
+    }
+
+    .ss-content p {
+      font-size: 13px;
+      color: #475569;
+      margin: 0;
+      line-height: 1.65;
+    }
+
+    /* 2カラム色分け */
+    .col-git {
+      background: #eff6ff !important;
+      border-color: #bfdbfe !important;
+    }
+
+    .col-github {
+      background: #f5f3ff !important;
+      border-color: #ddd6fe !important;
+    }
+
+    /* カード色分け（SVGの色と対応） */
+    .card {
+      transition: box-shadow 0.15s;
+    }
+
+    .card:hover {
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-branch {
+      border-color: #86efac !important;
+    }
+
+    .card-head {
+      border-color: #fcd34d !important;
+    }
+
+    .card-merge {
+      border-color: #93c5fd !important;
+    }
+
+    /* OS別インストール */
+    .os-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 8px 0 6px;
+    }
+
+    .os-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+
+    .os-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
+    .os-item code,
+    .os-item span {
+      font-size: 11px;
+      color: #0f172a;
+    }
+
+    /* ボックス統一 */
+    .warn-box {
+      background: #fef2f2;
+      border-left: 3px solid #ef4444;
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      margin-top: 8px;
+      font-size: 12.5px;
+      color: #991b1b;
+      line-height: 1.65;
+    }
+
+    .info-box {
+      background: #f1f5f9;
+      border-left: 3px solid #94a3b8;
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      margin-top: 8px;
+      font-size: 12.5px;
+      color: #475569;
+      line-height: 1.65;
+    }
+
+    .divider-label {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin: 12px 0 6px;
+    }
+
+    /* 開発サイクル カード */
+    .step-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 10px 0;
+    }
+
+    .step-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px 14px 12px;
+    }
+
+    .step-card-num {
+      width: 26px;
+      height: 26px;
+      background: #3b82f6;
+      color: white;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+
+    .step-card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 5px;
+    }
+
+    .step-card p {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .sc-cmd {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 11px;
+      color: #2563eb;
+      background: #eff6ff;
+      padding: 2px 7px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-top: 6px;
+    }
+
+    /* Push / Pull 図解 */
+    .push-pull {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 10px 0;
+    }
+
+    .pp-box {
+      border-radius: 8px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+
+    .pp-push {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .pp-pull {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+    }
+
+    .pp-box h4 {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .pp-push h4 {
+      color: #1d4ed8;
+    }
+
+    .pp-pull h4 {
+      color: #15803d;
+    }
+
+    .pp-arrow {
+      font-size: 26px;
+      margin: 6px 0;
+    }
+
+    .pp-box p {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.6;
+      margin: 0 0 6px;
+    }
+
+    .pp-cmd {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 11px;
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.75);
+      padding: 2px 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* PR フロー */
+    .pr-flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 10px 0 12px;
+    }
+
+    .pr-step {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+    }
+
+    .ps-icon {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .pr-step h4 {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+
+    .pr-step p {
+      font-size: 10px;
+      color: #64748b;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .pr-arrow {
+      color: #3b82f6;
+      font-size: 14px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    /* 開発サイクル ステップ説明 */
+    .cycle-steps {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .cycle-step {
+      flex: 1;
+      border-radius: 8px;
+      padding: 10px 10px 8px;
+      border-top: 3px solid;
+    }
+
+    .cs-blue {
+      background: #eff6ff;
+      border-color: #60a5fa;
+    }
+
+    .cs-purple {
+      background: #f5f3ff;
+      border-color: #c084fc;
+    }
+
+    .cs-green {
+      background: #f0fdf4;
+      border-color: #4ade80;
+    }
+
+    .cycle-step .cs-badge {
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .cs-blue .cs-badge {
+      color: #1d4ed8;
+    }
+
+    .cs-purple .cs-badge {
+      color: #7c3aed;
+    }
+
+    .cs-green .cs-badge {
+      color: #15803d;
+    }
+
+    .cycle-step h5 {
+      font-size: 12px;
+      color: #1e293b;
+      margin-bottom: 2px;
+      font-weight: 700;
+    }
+
+    .cycle-step p {
+      font-size: 10.5px;
+      color: #475569;
+      line-height: 1.5;
+      margin: 0;
+    }
+
+    /* ハンズオン ステップカード */
+    .hs-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin: 8px 0; }
+    .hs-card { background: #f8fafc; border: 1px solid #e2e8f0; border-top: 3px solid; border-radius: 8px; padding: 10px 12px; }
+    .hs-card.hs-blue   { border-top-color: #60a5fa; }
+    .hs-card.hs-purple { border-top-color: #c084fc; }
+    .hs-card.hs-green  { border-top-color: #4ade80; }
+    .hs-badge { font-size: 9px; font-weight: 700; letter-spacing: 0.04em; margin-bottom: 5px; }
+    .hs-blue  .hs-badge  { color: #1d4ed8; }
+    .hs-purple .hs-badge { color: #7c3aed; }
+    .hs-green  .hs-badge { color: #15803d; }
+    .hs-card h5 { font-size: 12px; font-weight: 700; color: #0f172a; margin-bottom: 5px; }
+    .hs-card p  { font-size: 11px; color: #475569; line-height: 1.6; margin: 0; }
+    .hs-sub     { font-size: 10px !important; color: #94a3b8 !important; margin-top: 5px !important; }
+
+    /* ===== Branch Visualization ===== */
+    .bviz-wrap { display:flex; flex-direction:column; flex:1; min-height:0; background:#fff; }
+    .bviz-title-bar { padding:8px 18px 2px; font-size:14px; font-weight:700; color:#0f172a; flex-shrink:0; letter-spacing:-0.01em; }
+    .bviz-svg-area { flex:1; padding:2px 12px 0; min-height:0; overflow:hidden; }
+    .bviz-legend { padding:3px 18px 0; display:flex; gap:14px; flex-wrap:wrap; flex-shrink:0; }
+    .bviz-leg { font-size:10px; font-weight:600; display:flex; align-items:center; gap:3px; }
+    .bviz-leg-main    { color:#2563eb; }
+    .bviz-leg-feature { color:#a855f7; }
+    .bviz-leg-merge   { color:#10b981; }
+    .bviz-leg-rebase  { color:#f97316; }
+    .bviz-leg-head    { color:#f59e0b; }
+    .bviz-terminal { background:#0f172a; margin:5px 12px 0; border-radius:8px; flex-shrink:0; overflow:hidden; }
+    .bviz-term-chrome { padding:5px 10px; display:flex; gap:5px; align-items:center; border-bottom:1px solid #1e293b; }
+    .bviz-term-chrome span { width:9px; height:9px; border-radius:50%; display:inline-block; }
+    .bviz-term-chrome span:nth-child(1) { background:#ef4444; }
+    .bviz-term-chrome span:nth-child(2) { background:#f59e0b; }
+    .bviz-term-chrome span:nth-child(3) { background:#22c55e; }
+    .bviz-term-body { padding:7px 14px; font-family:'SF Mono','Fira Code','Consolas',monospace; font-size:12.5px; color:#e2e8f0; display:flex; align-items:center; gap:5px; min-height:32px; }
+    .bviz-cmd-prompt { color:#4ade80; font-weight:700; flex-shrink:0; }
+    .bviz-cursor { color:#94a3b8; animation:bviz-blink 1s step-end infinite; margin-left:1px; }
+    @keyframes bviz-blink { 50% { opacity:0; } }
+    .bviz-desc-bar { padding:5px 18px 2px; font-size:11.5px; color:#64748b; flex-shrink:0; line-height:1.55; min-height:24px; }
+    .bviz-note-bar { padding:1px 18px 2px; font-size:11px; color:#f97316; flex-shrink:0; }
+    .bviz-controls { padding:7px 12px 6px; display:flex; align-items:center; gap:8px; flex-shrink:0; border-top:1px solid #f1f5f9; }
+    .bviz-btn { padding:6px 16px; border:1.5px solid #e2e8f0; border-radius:20px; font-size:11.5px; font-weight:600; cursor:pointer; background:#fff; color:#334155; white-space:nowrap; transition:background 0.12s, border-color 0.12s; }
+    .bviz-btn:hover:not(:disabled) { background:#f8fafc; border-color:#94a3b8; }
+    .bviz-btn:disabled { opacity:0.3; cursor:default; }
+    .bviz-btn.next { background:#0f172a; color:#fff; border-color:#0f172a; }
+    .bviz-btn.next:hover:not(:disabled) { background:#1e293b; }
+    .bviz-btn.rst { padding:6px 11px; font-size:15px; border-color:#fca5a5; color:#dc2626; }
+    .bviz-btn.rst:hover:not(:disabled) { background:#fef2f2; }
+    .bviz-dots { display:flex; gap:5px; align-items:center; flex:1; justify-content:center; }
+    .bviz-dot { width:7px; height:7px; border-radius:50%; background:#e2e8f0; transition:all 0.25s ease; flex-shrink:0; cursor:pointer; }
+    .bviz-dot:hover { background:#94a3b8; }
+    .bviz-dot.done { background:#94a3b8; }
+    .bviz-dot.active { background:#0891b2; width:22px; border-radius:4px; }
+    .bviz-step-bar { padding:5px 10px 6px; display:flex; gap:4px; flex-wrap:wrap; justify-content:center; flex-shrink:0; border-top:1px solid #f1f5f9; background:#f8fafc; }
+    .bviz-step-tag { padding:4px 9px; border:1.5px solid #e2e8f0; border-radius:6px; font-size:10px; font-weight:600; cursor:pointer; background:#fff; color:#64748b; transition:all 0.15s; white-space:nowrap; line-height:1.4; }
+    .bviz-step-tag:hover { background:#f1f5f9; border-color:#94a3b8; color:#334155; }
+    .bviz-step-tag.active { background:#0f172a; color:#fff; border-color:#0f172a; }
+    .bviz-step-tag.done { border-color:#94a3b8; color:#475569; background:#fff; }
+    .bviz-hint-bar { text-align:center; padding:2px 0 4px; font-size:10px; color:#cbd5e1; flex-shrink:0; background:#f8fafc; }
+
+    @media (max-width: 480px) {
+      .slide-main        { padding: 16px 18px 12px; }
+      .slide-main h2     { font-size: 18px; }
+      .slide-header      { padding: 8px 14px; }
+      .cs-body           { max-height: 150px; }
+      .cs-body pre       { font-size: 10px; line-height: 1.6; }
+      .two-col           { grid-template-columns: 1fr; gap: 8px; }
+      .slide-title h1    { font-size: 32px; }
+      .slide-section h1  { font-size: 28px; }
+      .sec-desc          { font-size: 12px; }
+      .hs-grid           { grid-template-columns: 1fr 1fr; gap: 6px; }
+      .analogy           { font-size: 12px; }
+      .info-box, .warn-box { font-size: 11px; }
+      svg                { overflow-x: auto; }
+    }
+
+    @media (max-width: 360px) {
+      .slide-main        { padding: 10px 12px 8px; }
+      .slide-main h2     { font-size: 15px; }
+      .hs-grid           { grid-template-columns: 1fr; }
+      .slide-title h1    { font-size: 26px; }
+      .slide-section h1  { font-size: 22px; }
+      .cs-body pre       { font-size: 9px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <button class="nav-prev" id="prevBtn" onclick="nav(-1)">&#8592;</button>
+  <button class="nav-next" id="nextBtn" onclick="nav(1)">&#8594;</button>
+  <div class="progress">
+    <div class="progress-bar" id="bar"></div>
+  </div>
+
+  <script>
+    const S = [
+      { type: 'title' },
+
+      // Section 1（統合3枚：初学者・UIデザイナー・ベテランエンジニア視点）
+      { type:'section', s:'Section 1', t:'入門・環境構築',
+        desc:'環境が整っていないと何も始まらない。GitとGitHubの基礎概念を理解し、開発をスタートするための土台を整える。',
+        topics:['Gitとは何か？','3つの領域と基本用語','ローカル vs リモート','環境構築ステップ'] },
+      {
+        s: 'Section 1: 入門・環境構築', t: 'Gitとは何か？',
+        b: `<div class="analogy">
+         <div class="analogy-label">💡 初学者向けイメージ</div>
+         <p>Gitは「<strong>プロジェクトのタイムマシン</strong>」。ファイルの変更履歴をスナップショットとして保存し、いつでも過去の状態に戻れる。ゲームのセーブポイントをイメージすると分かりやすい。</p>
+       </div>
+       <div class="two-col">
+         <div class="col-git">
+           <h4>🗂 Git（ローカルツール）</h4>
+           <ul>
+             <li>分散型バージョン管理システム（DVCS）</li>
+             <li>PC上で完結・インターネット不要</li>
+             <li>変更履歴の記録・いつでも復元可</li>
+             <li>複数人での並行開発を実現</li>
+           </ul>
+         </div>
+         <div class="col-github">
+           <h4>🌐 GitHub（クラウドサービス）</h4>
+           <ul>
+             <li>Gitリポジトリのホスティング</li>
+             <li>チームでの共有・共同開発</li>
+             <li>プルリクエストでコードレビュー</li>
+             <li>GitをベースにしたWebサービス</li>
+           </ul>
+         </div>
+       </div>
+       <div class="note">📌 この資料では <strong>VSCode の Git 機能</strong>をメインに操作します。各スライド下部のコマンドは「VSCode が裏で何をしているか」を示しています。コマンドを覚えなくても操作できますが、読めると理解が深まります。</div>`,
+        c: `git --version              <span class="c"># バージョン確認</span>
+git help &lt;command&gt;         <span class="c"># コマンドのヘルプ</span>
+git help -a                <span class="c"># 全コマンド一覧</span>` },
+
+      {
+        s: 'Section 1: 入門・環境構築', t: '3つの領域と基本用語',
+        b: `<div class="flow-diagram">
+         <div class="flow-box">
+           <div class="fb-icon">📁</div>
+           <h4>Working Directory</h4>
+           <p>実際に編集する<br>作業領域</p>
+         </div>
+         <div class="flow-arrow">─ git add ▶</div>
+         <div class="flow-box">
+           <div class="fb-icon">📋</div>
+           <h4>Staging Area</h4>
+           <p>コミット前の<br>一時登録エリア</p>
+         </div>
+         <div class="flow-arrow">─ git commit ▶</div>
+         <div class="flow-box">
+           <div class="fb-icon">🗄</div>
+           <h4>Repository (.git)</h4>
+           <p>履歴が記録される<br>データベース</p>
+         </div>
+       </div>
+       <p class="divider-label">▼ リポジトリの中では — コミットが積み重なり、ブランチで分岐できる</p>
+       <svg viewBox="0 0 720 110" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;margin-bottom:12px;">
+         <rect width="720" height="110" rx="10" fill="#0f172a"/>
+         <line x1="60" y1="45" x2="650" y2="45" stroke="#334155" stroke-width="2"/>
+         <line x1="270" y1="45" x2="350" y2="85" stroke="#334155" stroke-width="1.5"/>
+         <line x1="350" y1="85" x2="520" y2="85" stroke="#334155" stroke-width="1.5"/>
+         <line x1="520" y1="85" x2="590" y2="45" stroke="#334155" stroke-width="1.5"/>
+         <text x="18" y="49" font-size="11" font-weight="700" fill="#4ade80" font-family="sans-serif">main</text>
+         <text x="18" y="89" font-size="11" font-weight="700" fill="#c084fc" font-family="sans-serif">feat</text>
+         <circle cx="100" cy="45" r="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+         <text x="100" y="49" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="sans-serif">C1</text>
+         <circle cx="200" cy="45" r="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+         <text x="200" y="49" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="sans-serif">C2</text>
+         <circle cx="270" cy="45" r="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+         <text x="270" y="49" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="sans-serif">C3</text>
+         <circle cx="350" cy="85" r="12" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+         <text x="350" y="89" text-anchor="middle" font-size="9" fill="#c084fc" font-family="sans-serif">C4</text>
+         <circle cx="520" cy="85" r="12" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+         <text x="520" y="89" text-anchor="middle" font-size="9" fill="#c084fc" font-family="sans-serif">C5</text>
+         <circle cx="590" cy="45" r="13" fill="#1d4ed8" stroke="#60a5fa" stroke-width="2"/>
+         <text x="590" y="42" text-anchor="middle" font-size="9" fill="white" font-family="sans-serif">C6</text>
+         <text x="590" y="53" text-anchor="middle" font-size="7.5" fill="#93c5fd" font-family="sans-serif">merge</text>
+         <rect x="554" y="10" width="52" height="18" rx="4" fill="#f59e0b"/>
+         <text x="580" y="23" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b" font-family="sans-serif">HEAD</text>
+         <line x1="580" y1="28" x2="585" y2="42" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2"/>
+         <text x="360" y="106" text-anchor="middle" font-size="9" fill="#475569" font-family="sans-serif">HEAD = 現在の作業位置。コミットはHEADの先に積み重なっていく。</text>
+       </svg>
+       <div class="card-grid">
+         <div class="card card-branch"><div class="card-icon">🌿</div><h4>ブランチ</h4><p>コミット履歴の独立した作業ライン。mainから分岐して開発できる</p></div>
+         <div class="card card-head"><div class="card-icon">📍</div><h4>HEAD</h4><p>現在の作業位置を示すポインタ。コミットはHEADの先に積まれる</p></div>
+         <div class="card card-merge"><div class="card-icon">🔁</div><h4>マージ</h4><p>別ブランチの変更をmainに統合する操作。履歴が1本にまとまる</p></div>
+       </div>
+       <div class="info-box">🖥 <strong>VSCode:</strong> ソース管理パネル (Ctrl+Shift+G) で3つの状態を確認できる。「変更」= Working Dir の編集済みファイル、「ステージされた変更」= Staging Area、「✓ コミット」でローカル Repository に記録される。</div>`,
+        c: `<span class="c"># 3つの領域を確認するコマンド</span>
+git status             <span class="c"># 現在の状態を表示</span>
+git diff               <span class="c"># Working Dir の変更差分</span>
+git diff --staged      <span class="c"># Staging の変更差分</span>
+git log --oneline      <span class="c"># コミット履歴（Repository）</span>` },
+
+      {
+        s: 'Section 1: 入門・環境構築', t: 'ローカル vs リモートリポジトリ',
+        b: `<p class="note" style="margin-bottom:10px;">Gitは<strong>ローカル（自分のPC）</strong>と<strong>リモート（GitHub）</strong>の2か所でコミット履歴を管理する。この仕組みを押さえると push・pull・clone の意味が自然とわかる。</p>
+           <svg viewBox="0 0 720 198" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;">
+             <rect width="720" height="198" rx="10" fill="#0f172a"/>
+             <!-- LOCAL panel -->
+             <rect x="10" y="26" width="280" height="164" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+             <text x="20" y="19" font-size="10" font-weight="700" fill="#94a3b8" font-family="sans-serif">🖥  ローカル（自分のPC）</text>
+             <!-- WD zone -->
+             <rect x="18" y="33" width="264" height="44" rx="5" fill="#052e16" stroke="#4ade80" stroke-width="1" stroke-opacity="0.7"/>
+             <text x="28" y="51" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">Working Directory</text>
+             <text x="28" y="65" font-size="9" fill="#86efac" font-family="sans-serif">ファイルを実際に編集する場所</text>
+             <!-- git add label -->
+             <text x="150" y="85" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">↓  git add</text>
+             <!-- Staging zone -->
+             <rect x="18" y="88" width="264" height="36" rx="5" fill="#431407" stroke="#fcd34d" stroke-width="1" stroke-opacity="0.7"/>
+             <text x="28" y="105" font-size="9" font-weight="700" fill="#fcd34d" font-family="sans-serif">Staging Area</text>
+             <text x="28" y="118" font-size="9" fill="#fde68a" font-family="sans-serif">コミット前の一時登録エリア</text>
+             <!-- git commit label -->
+             <text x="150" y="133" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">↓  git commit</text>
+             <!-- Local Repo zone -->
+             <rect x="18" y="136" width="264" height="46" rx="5" fill="#0c1d3b" stroke="#60a5fa" stroke-width="1.2"/>
+             <text x="28" y="154" font-size="9" font-weight="700" fill="#60a5fa" font-family="sans-serif">Local Repository  (.git)</text>
+             <text x="28" y="167" font-size="9" fill="#93c5fd" font-family="sans-serif">コミット履歴の DB。ネット不要で操作できる。</text>
+             <text x="28" y="178" font-size="8" fill="#475569" font-family="sans-serif">push / pull / fetch でリモートと同期する</text>
+             <!-- REMOTE panel -->
+             <rect x="430" y="26" width="280" height="164" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1.5"/>
+             <text x="440" y="19" font-size="10" font-weight="700" fill="#94a3b8" font-family="sans-serif">☁️  リモート（GitHub）</text>
+             <!-- Remote Repo zone (dashed = network boundary) -->
+             <rect x="438" y="33" width="264" height="149" rx="5" fill="#0c1a2e" stroke="#818cf8" stroke-width="1.2" stroke-dasharray="5,3"/>
+             <text x="570" y="85" text-anchor="middle" font-size="26" font-family="sans-serif">🐙</text>
+             <text x="570" y="106" text-anchor="middle" font-size="11" font-weight="700" fill="#818cf8" font-family="sans-serif">Remote Repository</text>
+             <text x="570" y="122" text-anchor="middle" font-size="9" fill="#a5b4fc" font-family="sans-serif">チーム全員がアクセスできる共有 DB</text>
+             <text x="570" y="138" text-anchor="middle" font-size="9" fill="#64748b" font-family="sans-serif">PR・コードレビューもここで管理</text>
+             <text x="570" y="153" text-anchor="middle" font-size="9" fill="#64748b" font-family="sans-serif">GitHub.com 上でホスト</text>
+             <text x="570" y="170" text-anchor="middle" font-size="8" fill="#334155" font-family="sans-serif">破線 = ネットワーク境界</text>
+             <!-- ARROWS (gap center x=360) -->
+             <!-- push → (orange) -->
+             <line x1="295" y1="90" x2="421" y2="90" stroke="#f59e0b" stroke-width="2"/>
+             <polygon points="421,85 433,90 421,95" fill="#f59e0b"/>
+             <text x="360" y="83" text-anchor="middle" font-size="9" font-weight="700" fill="#f59e0b" font-family="sans-serif">git push →</text>
+             <!-- pull ← (green) -->
+             <line x1="433" y1="118" x2="309" y2="118" stroke="#4ade80" stroke-width="2"/>
+             <polygon points="309,113 297,118 309,123" fill="#4ade80"/>
+             <text x="360" y="113" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">← git pull</text>
+             <text x="360" y="131" text-anchor="middle" font-size="7.5" fill="#4ade80" fill-opacity="0.7" font-family="sans-serif">fetch + merge</text>
+             <!-- clone ← (purple, dashed, one-time) -->
+             <line x1="433" y1="163" x2="309" y2="163" stroke="#c084fc" stroke-width="1.8" stroke-dasharray="5,3"/>
+             <polygon points="309,158 297,163 309,168" fill="#c084fc"/>
+             <text x="360" y="157" text-anchor="middle" font-size="9" font-weight="700" fill="#c084fc" font-family="sans-serif">← git clone</text>
+             <text x="360" y="176" text-anchor="middle" font-size="8" fill="#7c3aed" font-family="sans-serif">初回のみ（一度だけ実行）</text>
+           </svg>
+           <div class="info-box">🖥 <strong>VSCode:</strong> ソース管理パネル上部「…」メニュー → 「プル」「プッシュ」「クローン」でリモートとの同期ができる。ステータスバー左下の「↑n ↓n」は push/pull できるコミット数を示している。</div>`,
+        c: `git clone &lt;url&gt;              <span class="c"># リモートをローカルに複製（初回のみ）</span>
+git push origin &lt;branch&gt;     <span class="c"># ローカル → リモートに送信</span>
+git pull                      <span class="c"># リモート → ローカルに取り込み（fetch + merge）</span>
+git fetch                     <span class="c"># 情報だけ取得してマージしない（差分確認に便利）</span>` },
+
+      {
+        s: 'Section 1: 入門・環境構築', t: '環境構築ステップ',
+        b: `<ol class="setup-steps">
+         <li>
+           <div class="ss-num">1</div>
+           <div class="ss-content">
+             <h4>Git インストール</h4>
+             <div class="os-grid">
+               <div class="os-item"><div class="os-label">🍎 macOS</div><code>brew install git</code></div>
+               <div class="os-item"><div class="os-label">🪟 Windows</div><span>git-scm.com からインストーラーをDL</span></div>
+               <div class="os-item"><div class="os-label">🐧 Linux</div><code>sudo apt install git</code></div>
+             </div>
+           </div>
+         </li>
+         <li>
+           <div class="ss-num">2</div>
+           <div class="ss-content">
+             <h4>GitHub アカウント作成</h4>
+             <p>github.com でアカウント登録。パブリック（公開）とプライベート（非公開）リポジトリを作成できる。Issueやプルリクエストによるコードレビューも利用可能。</p>
+           </div>
+         </li>
+         <li>
+           <div class="ss-num">3</div>
+           <div class="ss-content">
+             <h4>SSH 鍵ペアの設定</h4>
+             <p><span class="term">秘密鍵</span>をローカルに保持し、<span class="term">公開鍵</span>をGitHubに登録。パスワード不要で安全に通信できる。現在はed25519アルゴリズムが推奨。</p>
+             <div class="warn-box">⚠️ 秘密鍵（id_ed25519）は<strong>公開しないように</strong>——後悔しますよ！<br>GitHubに登録するのは <code>.pub</code> のついた公開鍵だけ。</div>
+           </div>
+         </li>
+       </ol>
+       <div class="note">✅ セットアップ後の確認：<code>git config --list</code> で設定確認、<code>ssh -T git@github.com</code> で接続テスト。</div>
+       <div class="info-box">📝 SSH の詳細設定（エージェントの起動方法など）は OS によって手順が異なります。上記はあくまで一例です。<strong>自分の OS 名 + "SSH GitHub 設定"</strong> で検索してみてください。</div>
+       <div class="info-box">🖥 <strong>VSCode:</strong> Git インストール後に VSCode を再起動するとソース管理パネルが有効になる。おすすめ拡張機能：<strong>GitLens</strong>（コミット履歴の詳細表示）、<strong>Git Graph</strong>（ブランチのグラフ表示）。</div>`,
+        c: `<span class="c"># macOS</span>
+brew install git
+<span class="c"># Windows (winget)</span>
+winget install --id Git.Git
+<span class="c"># Linux (Debian / Ubuntu)</span>
+sudo apt install git
+
+<span class="c"># 共通: ユーザー設定（全OS）</span>
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+git config --global init.defaultBranch main
+
+<span class="c"># SSH 鍵の設定（全OS共通）</span>
+ssh-keygen -t ed25519 -C "you@example.com"
+ssh-add ~/.ssh/id_ed25519
+cat ~/.ssh/id_ed25519.pub  <span class="c"># 公開鍵をGitHubに登録</span>
+ssh -T git@github.com      <span class="c"># 接続テスト</span>` },
+
+      // Section 2（統合5枚：初学者・UIデザイナー・ベテランエンジニア視点）
+      { type:'section', s:'Section 2', t:'基本ワークフロー',
+        desc:'このサイクルがGit開発の9割を占める。clone → ブランチ → commit → push → PR の基本の流れを実際に動かして身につける。',
+        topics:['リポジトリ作成・clone','開発の基本サイクル','push・pull・履歴確認','プルリクエスト','マージ後の後処理'] },
+      {
+        s: 'Section 2: 基本ワークフロー', t: 'GitHubリポジトリの作成 & clone',
+        b: `<div class="analogy">
+             <div class="analogy-label">🎯 このスライドのゴール</div>
+             <p>GitHubにリポジトリを作り、自分のPCにコピー（clone）して開発準備を整える。</p>
+           </div>
+           <ol class="setup-steps">
+             <li>
+               <div class="ss-num">1</div>
+               <div class="ss-content">
+                 <h4>GitHub上でリポジトリを作成</h4>
+                 <p>github.com → 「New repository」→ リポジトリ名・公開設定を選択 → 「Create repository」をクリック。READMEや.gitignoreの初期化もここで行える。</p>
+                 <div class="warn-box">⚠️ 公開設定は基本 <strong>Private</strong> を選ぶこと。Publicにするとソースコードが全世界に公開される。業務コードや個人情報を含む場合は特に注意。</div>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">2</div>
+               <div class="ss-content">
+                 <h4>ローカルにclone（複製）する</h4>
+                 <p>GitHubの「Code」→ SSH URLをコピーして実行。cloneすると <span class="term">origin</span> という名前でリモートが自動登録される。<br><span style="font-size:11px;color:#94a3b8;">💡 <code>origin</code> = リモートリポジトリへの接続先に付けた短縮名（<code>git remote -v</code> で確認可能）。mainの<strong>追跡ブランチ</strong>（<code>origin/main</code>）も自動設定され、push / pull の向き先として機能する。</span></p>
+               </div>
+             </li>
+           </ol>
+           <div class="info-box">🖥 <strong>VSCode での clone:</strong> Ctrl+Shift+P →「Git: Clone」→ GitHub の「Code」から SSH URL をコピーして貼り付け → 保存先フォルダを選択 →「開く」でそのままプロジェクトを開ける。コマンド不要。</div>`,
+        c: `git clone &lt;url&gt;                 <span class="c"># リポジトリをclone</span>
+git clone &lt;url&gt; &lt;directory&gt;   <span class="c"># ディレクトリ名を指定してclone</span>
+git remote -v                  <span class="c"># リモートの登録を確認</span>
+git remote add origin &lt;url&gt;   <span class="c"># 既存リポジトリにリモートを追加</span>` },
+
+      {
+        s: 'Section 2: 基本ワークフロー', t: '開発の基本サイクル',
+        b: `<div class="warn-box" style="margin-bottom:8px;">⚠️ <strong>mainブランチを直接編集しない！</strong> 機能追加・修正ごとに必ず作業ブランチを切ること。</div>
+           <svg viewBox="0 0 720 158" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:10px;margin-bottom:10px;">
+             <rect width="720" height="158" rx="10" fill="#0f172a"/>
+             <line x1="68" y1="50" x2="660" y2="50" stroke="#334155" stroke-width="2"/>
+             <line x1="295" y1="105" x2="490" y2="105" stroke="#334155" stroke-width="2"/>
+             <line x1="210" y1="50" x2="295" y2="105" stroke="#334155" stroke-width="2"/>
+             <line x1="490" y1="105" x2="580" y2="50" stroke="#334155" stroke-width="2"/>
+             <text x="14" y="54" font-size="11" font-weight="700" fill="#4ade80" font-family="sans-serif">main</text>
+             <text x="14" y="109" font-size="11" font-weight="700" fill="#c084fc" font-family="sans-serif">feature</text>
+             <circle cx="100" cy="50" r="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="100" y="54" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="210" cy="50" r="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="210" y="54" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="sans-serif">C2</text>
+             <circle cx="370" cy="50" r="12" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="370" y="54" text-anchor="middle" font-size="9" fill="#94a3b8" font-family="sans-serif">C3</text>
+             <circle cx="580" cy="50" r="13" fill="#1d4ed8" stroke="#60a5fa" stroke-width="2"/>
+             <text x="580" y="46" text-anchor="middle" font-size="9" fill="white" font-family="sans-serif">C6</text>
+             <text x="580" y="58" text-anchor="middle" font-size="8" fill="#93c5fd" font-family="sans-serif">merge</text>
+             <circle cx="295" cy="105" r="12" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="295" y="109" text-anchor="middle" font-size="9" fill="#c084fc" font-family="sans-serif">C4</text>
+             <circle cx="490" cy="105" r="12" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="490" y="109" text-anchor="middle" font-size="9" fill="#c084fc" font-family="sans-serif">C5</text>
+             <rect x="544" y="16" width="48" height="18" rx="4" fill="#f59e0b"/>
+             <text x="568" y="29" text-anchor="middle" font-size="10" font-weight="700" fill="#1e293b" font-family="sans-serif">HEAD</text>
+             <line x1="568" y1="34" x2="576" y2="46" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2"/>
+             <rect x="64" y="7" width="80" height="16" rx="8" fill="#0c2040"/>
+             <text x="104" y="19" text-anchor="middle" font-size="9" font-weight="700" fill="#60a5fa" font-family="sans-serif">① clone後</text>
+             <rect x="196" y="75" width="112" height="16" rx="8" fill="#1e0a40"/>
+             <text x="252" y="87" text-anchor="middle" font-size="9" font-weight="700" fill="#c084fc" font-family="sans-serif">② ブランチ作成</text>
+             <rect x="336" y="119" width="108" height="16" rx="8" fill="#1e0a40"/>
+             <text x="390" y="131" text-anchor="middle" font-size="9" font-weight="700" fill="#c084fc" font-family="sans-serif">③ 作業・コミット</text>
+             <rect x="488" y="75" width="96" height="16" rx="8" fill="#0c2040"/>
+             <text x="536" y="87" text-anchor="middle" font-size="9" font-weight="700" fill="#60a5fa" font-family="sans-serif">④ push → PR</text>
+             <rect x="598" y="7" width="80" height="16" rx="8" fill="#0a1f10"/>
+             <text x="638" y="19" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">⑤ マージ後</text>
+             <text x="650" y="150" text-anchor="end" font-size="9" fill="#475569" font-family="sans-serif">HEAD = 現在の作業位置（ここに git commit が積まれる）</text>
+           </svg>
+           <div class="cycle-steps">
+             <div class="cycle-step cs-blue">
+               <div class="cs-badge">① clone後</div>
+               <h5>リポジトリを複製</h5>
+               <p>GitHubからローカルにコピー。初回のみ実施。</p>
+             </div>
+             <div class="cycle-step cs-purple">
+               <div class="cs-badge">② ブランチ作成</div>
+               <h5>作業ブランチを切る</h5>
+               <p>mainから分岐。名前は内容が分かるものに（例: <code>feature/login</code>）。</p>
+             </div>
+             <div class="cycle-step cs-purple">
+               <div class="cs-badge">③ 作業・コミット</div>
+               <h5>編集 → add → commit</h5>
+               <p>変更をステージしてコミット。この繰り返しで履歴を積む。</p>
+             </div>
+             <div class="cycle-step cs-blue">
+               <div class="cs-badge">④ push → PR</div>
+               <h5>GitHubに送信・PR作成</h5>
+               <p>ブランチをpushしてプルリクエストを作成。レビューを依頼する。</p>
+             </div>
+             <div class="cycle-step cs-green">
+               <div class="cs-badge">⑤ マージ後</div>
+               <h5>mainに統合・後処理</h5>
+               <p>PRがマージされたらmainをpull。作業ブランチは削除する。</p>
+             </div>
+           </div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> ブランチ作成 → ステータスバー左下のブランチ名クリック →「＋ 新しいブランチ」。ステージ → ソース管理パネルで変更ファイルの「＋」。コミット → メッセージ入力 →「✓ コミット」ボタン。</div>`,
+        c: `git switch -c &lt;name&gt;         <span class="c"># ブランチを作成して切り替え</span>
+git branch                    <span class="c"># ブランチ一覧</span>
+git add &lt;file&gt;               <span class="c"># ファイルをステージ</span>
+git add .                     <span class="c"># 全変更をステージ</span>
+git add -p                    <span class="c"># 変更箇所を対話的に選択</span>
+git status                    <span class="c"># 現在の状態を確認</span>
+git commit -m "メッセージ"      <span class="c"># コミット作成</span>
+git commit --amend            <span class="c"># 直前のコミットを修正（未pushのみ）</span>` },
+
+      {
+        s: 'Section 2: 基本ワークフロー', t: 'push・pull・履歴確認',
+        b: `<div class="push-pull">
+             <div class="pp-box pp-push">
+               <h4>⬆ push — 送信</h4>
+               <div class="pp-arrow">💻 → ☁️</div>
+               <p>ローカルの変更をリモート（GitHub）に送信。<code>-u</code>で上流ブランチを設定すると次回から省略可能。</p>
+               <span class="pp-cmd">git push -u origin &lt;branch&gt;</span>
+             </div>
+             <div class="pp-box pp-pull">
+               <h4>⬇ pull — 取り込み</h4>
+               <div class="pp-arrow">☁️ → 💻</div>
+               <p>リモートの最新変更をローカルに取り込む（fetch + merge）。作業開始前に必ず実行する習慣をつける。</p>
+               <span class="pp-cmd">git pull origin main</span>
+               <p style="font-size:11px;color:#64748b;margin-top:6px;">💡 fetch との違い・詳細な使い分けは Section 5 で解説</p>
+             </div>
+           </div>
+           <p class="divider-label">▼ コミット履歴の確認</p>
+           <p>誰が・いつ・どんな変更をしたかを把握できる。<code>--oneline --graph --all</code>でブランチの分岐・マージを視覚的に確認できる。</p>
+           <div class="info-box">🖥 <strong>VSCode:</strong> push → ソース管理パネルの「変更の同期 (↑)」または初回は「ブランチのパブリッシュ」。pull → 「…」→「プル」。コミット履歴 → エクスプローラー下部「タイムライン」でファイルごとの変更履歴を GUI で確認できる。</div>`,
+        c: `git push -u origin &lt;branch&gt;        <span class="c"># 上流設定してpush</span>
+git push                              <span class="c"># 上流設定済みなら省略可</span>
+git pull origin main                  <span class="c"># リモートmainをpull</span>
+git log --oneline                     <span class="c"># 履歴を1行表示</span>
+git log --oneline --graph --all       <span class="c"># 全ブランチをグラフ表示</span>
+git log -n 5                          <span class="c"># 直近5件</span>
+git show &lt;hash&gt;                       <span class="c"># コミットの詳細</span>` },
+
+      {
+        s: 'Section 2: 基本ワークフロー', t: 'プルリクエスト（PR）',
+        b: `<div class="analogy">
+             <div class="analogy-label">💬 PRとは？</div>
+             <p>作業ブランチをmainに取り込む前に「このコードで問題ないか確認してください」とチームに依頼する仕組み。GitHub上で行う。</p>
+           </div>
+           <ol class="setup-steps">
+             <li>
+               <div class="ss-num">1</div>
+               <div class="ss-content">
+                 <h4>作業ブランチをpushする</h4>
+                 <p>ローカルで作業・コミットしたブランチをGitHubに送信する。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">2</div>
+               <div class="ss-content">
+                 <h4>GitHub上でPRを作成する</h4>
+                 <p>pushすると「Compare &amp; pull request」ボタンが表示される。クリックして <span class="term">base: main</span> ← <span class="term">compare: 作業ブランチ</span> を確認し、タイトル・説明を書いて作成。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">3</div>
+               <div class="ss-content">
+                 <h4>レビューを受ける</h4>
+                 <p>チームメンバーがコードを確認・コメントする。修正が必要な場合は対応してpushし直すと自動でPRに反映される。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">4</div>
+               <div class="ss-content">
+                 <h4>Approve → マージ</h4>
+                 <p>問題なければApproveされる。「Merge pull request」をクリックしてmainに統合して完了。</p>
+               </div>
+             </li>
+           </ol>
+           <div class="note">💡 マージ後は GitHub 上の「Delete branch」ボタンでリモートブランチを削除しておくとリポジトリがすっきりする。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> 拡張機能「<strong>GitHub Pull Requests</strong>」をインストールすると VSCode 内で PR の作成・レビュー・マージが行える。コメントへの返答もエディタ内でできて便利。</div>`,
+        c: `<span class="c"># 1. 作業ブランチをpush</span>
+git push -u origin &lt;branch&gt;
+<span class="c"># 2. GitHub上で Pull Request を作成</span>
+<span class="c">#    「Compare & pull request」→ base: main ← compare: &lt;branch&gt;</span>
+<span class="c"># 3. レビュー → Approve → Merge</span>` },
+
+      {
+        s: 'Section 2: 基本ワークフロー', t: 'マージ後の後処理',
+        b: `<ol class="setup-steps">
+             <li>
+               <div class="ss-num">1</div>
+               <div class="ss-content">
+                 <h4>mainを最新に更新する</h4>
+                 <p>チームメンバーがmainにマージした後、ローカルのmainを最新状態に更新する。次の作業ブランチは<strong>この最新のmainから</strong>作成すること。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">2</div>
+               <div class="ss-content">
+                 <h4>マージ済みブランチを削除する</h4>
+                 <p>ローカルとリモート両方から削除してリポジトリを整理する。<span class="term">-d</span>はマージ済みのみ削除（安全）、<span class="term">-D</span>は強制削除。<br><span style="color:#64748b;font-size:12px;">※ 必須ではないが、ブランチが溜まると管理しにくくなるため削除が推奨。</span></p>
+               </div>
+             </li>
+           </ol>
+           <div class="info-box">📝 mainを定期的に更新しないと、ブランチとmainの差分が大きくなりコンフリクトが発生しやすくなる。PRをマージするたびに必ず実行する習慣をつけること。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> main への切り替え → ステータスバーのブランチ名クリック → main を選択。pull → ソース管理「…」→「プル」。ブランチ削除 → ステータスバーのブランチ名クリック →「ブランチの削除」。</div>`,
+        c: `git switch main                      <span class="c"># mainに切り替え</span>
+git pull origin main                 <span class="c"># リモートのmainを取り込む</span>
+
+git branch -d &lt;branch&gt;              <span class="c"># マージ済みブランチを削除（安全）</span>
+git branch -D &lt;branch&gt;              <span class="c"># 強制削除</span>
+git push origin --delete &lt;branch&gt;  <span class="c"># リモートブランチを削除</span>
+git branch --merged                  <span class="c"># マージ済み一覧</span>` },
+
+      // Section 3
+      { type:'section', s:'Section 3', t:'ローカルリポジトリ操作',
+        desc:'「元に戻したい」場面は必ず来る。手元のリポジトリで使うファイル管理・変更の取り消し・履歴確認の手順を把握しておこう。',
+        topics:['git init','変更の取り消し','ファイル操作（mv・rm）','コミット履歴（git log）','.gitignore'] },
+      {
+        s: 'Section 3: ローカルリポジトリ操作', t: 'リポジトリの初期化 (git init)',
+        b: `<div class="analogy">🏗 <strong>git init</strong> は「プロジェクトフォルダに Git の頭脳を追加する」操作。実行すると <code>.git</code> フォルダが生まれ、以降のすべての変更が記録できるようになる。</div>
+           <div class="two-col" style="margin-top:10px;">
+             <div class="col-git">
+               <h4>🆕 新規プロジェクトの場合</h4>
+               <ol style="font-size:12.5px;line-height:2.2;padding-left:18px;margin-top:6px;">
+                 <li>フォルダを作成して <code>git init</code></li>
+                 <li><strong>先に</strong> <code>.gitignore</code> を作成する</li>
+                 <li><code>git add .</code> → <code>git commit -m "initial commit"</code></li>
+               </ol>
+             </div>
+             <div class="col-github">
+               <h4>📁 既存プロジェクトに Git を追加</h4>
+               <ol style="font-size:12.5px;line-height:2.2;padding-left:18px;margin-top:6px;">
+                 <li>プロジェクトフォルダで <code>git init</code></li>
+                 <li><strong>先に</strong> <code>.gitignore</code> を作成（不要ファイルを除外）</li>
+                 <li><code>git add .</code> → <code>git commit</code> で初回コミット</li>
+                 <li>GitHub に push する場合はリモートを登録</li>
+               </ol>
+             </div>
+           </div>
+           <div class="warn-box" style="margin-top:10px;">⚠️ <code>.git</code> フォルダを<strong>削除すると Git 管理が解除</strong>される（ファイル自体は残る）。誤って削除しないよう注意。</div>
+           <div class="info-box">VSCode: 左サイドバー「ソース管理」アイコン →「<strong>リポジトリの初期化</strong>」ボタンでも実行できる。</div>`,
+        c: `git init                    <span class="c"># 現在のディレクトリをGit管理化（.gitを作成）</span>
+git init &lt;directory&gt;       <span class="c"># ディレクトリを作成して初期化</span>
+git status                  <span class="c"># 初期化後の状態を確認</span>
+git remote add origin &lt;url&gt; <span class="c"># GitHubリモートを登録</span>
+git push -u origin main     <span class="c"># 初回push（上流ブランチを設定）</span>` },
+
+      {
+        s: 'Section 3: ローカルリポジトリ操作', t: '変更の取り消し',
+        b: `<div class="warn-box">⚠️ 取り消し操作は<strong>元に戻せないものがある。</strong> 実行前に必ず <code>git status</code> / <code>git diff</code> で状態を確認すること。</div>
+           <div class="step-cards" style="margin:10px 0;">
+             <div class="step-card" style="border-left:3px solid #4ade80;">
+               <div style="font-size:9px;font-weight:700;color:#4ade80;margin-bottom:6px;">✅ 安全 — Staging → Working Dir</div>
+               <h4>ステージを取り消す</h4>
+               <p><code>git add</code> したファイルをステージングから外す。ファイルの変更内容はそのまま Working Dir に残る。</p>
+               <span class="sc-cmd">git restore --staged &lt;file&gt;</span>
+             </div>
+             <div class="step-card" style="border-left:3px solid #ef4444;">
+               <div style="font-size:9px;font-weight:700;color:#ef4444;margin-bottom:6px;">⚠️ 危険 — 変更を破棄（復元不可）</div>
+               <h4>作業内容を元に戻す</h4>
+               <p>Working Dir のファイルを<strong>最後のコミット状態に上書き</strong>する。未コミットの変更は消える。</p>
+               <span class="sc-cmd">git restore &lt;file&gt;</span>
+             </div>
+             <div class="step-card" style="border-left:3px solid #f97316;">
+               <div style="font-size:9px;font-weight:700;color:#f97316;margin-bottom:6px;">⚠️ 危険 — 未追跡ファイルを削除（復元不可）</div>
+               <h4>未追跡ファイルを削除</h4>
+               <p>Untracked なファイル・ディレクトリをすべて削除する。まず <code>-n</code> でドライランを。</p>
+               <span class="sc-cmd">git clean -fd</span>
+             </div>
+           </div>
+           <div class="info-box">VSCode: ソース管理パネルで変更ファイルを右クリック →「<strong>変更を破棄</strong>」/「<strong>ステージを取り消す</strong>」でも操作できる。</div>`,
+        c: `git restore --staged &lt;file&gt;   <span class="c"># ステージを取り消す（変更は残る）✅</span>
+git restore --staged .         <span class="c"># すべてアンステージ</span>
+git restore &lt;file&gt;             <span class="c"># 変更を破棄（最後のコミットに戻す）⚠️</span>
+git restore .                  <span class="c"># 全ファイルの変更を破棄 ⚠️</span>
+git clean -n                   <span class="c"># 削除対象を確認（ドライラン）</span>
+git clean -fd                  <span class="c"># 未追跡ファイル・フォルダを削除 ⚠️</span>` },
+
+      {
+        s: 'Section 3: ローカルリポジトリ操作', t: 'ファイル操作 (git mv・git rm)',
+        b: `<div class="two-col">
+             <div class="col-git">
+               <h4>🔄 ファイルのリネーム — <code>git mv</code></h4>
+               <p style="font-size:12.5px;margin:6px 0 8px;line-height:1.7;">Git がリネームを<strong>変更として正しく追跡</strong>する。OS の <code>mv</code> コマンドを使うと「削除＋新規追加」として認識され、履歴の連続性が失われる。</p>
+               <div class="info-box">実行後はすでにステージ済み状態になる。そのまま <code>git commit</code> できる。</div>
+             </div>
+             <div class="col-github">
+               <h4>🗑 ファイルの削除 — <code>git rm</code></h4>
+               <p style="font-size:12.5px;margin:6px 0 8px;line-height:1.7;">削除を Git が追跡する。<code>--cached</code> オプションでリポジトリからのみ削除し、ローカルファイルは残せる。</p>
+               <div class="info-box"><code>.gitignore</code> に後から追加したファイルを追跡から外す際に <code>git rm --cached</code> が便利。</div>
+             </div>
+           </div>
+           <div class="warn-box" style="margin-top:10px;">⚠️ ファイル操作は<strong>Git コマンドを使うこと。</strong> OS の mv / rm を直接使うと Git が変更を正しく認識できない場合がある。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> リネーム → エクスプローラーでファイルを右クリック →「名前変更 (F2)」→ VSCode が自動で git mv を実行してステージ済みにする。削除 → 右クリック →「削除」→ ソース管理パネルに削除が反映される。</div>`,
+        c: `git mv &lt;old&gt; &lt;new&gt;            <span class="c"># リネーム（ステージ済み状態になる）</span>
+git status                      <span class="c"># "renamed: old → new" と表示される</span>
+git commit -m "rename: old to new"
+git rm &lt;file&gt;                  <span class="c"># ファイルを削除してステージ</span>
+git rm --cached &lt;file&gt;         <span class="c"># リポジトリからのみ削除（ファイルは残る）</span>
+git rm -r &lt;directory&gt;          <span class="c"># ディレクトリを再帰的に削除</span>` },
+
+      {
+        s: 'Section 3: ローカルリポジトリ操作', t: 'コミット履歴の確認 (git log)',
+        b: `<div class="analogy">🕐 <strong>git log</strong> は Git のタイムライン。いつ・誰が・何をコミットしたかを確認できる。<code>--oneline --graph --all</code> の組み合わせが特に有用。</div>
+           <div class="two-col" style="margin-top:10px;">
+             <div class="col-git">
+               <h4>📋 よく使うオプション</h4>
+               <ul style="font-size:12.5px;line-height:2.2;margin-top:6px;">
+                 <li><code>--oneline</code> — 1行で簡潔に表示</li>
+                 <li><code>--graph</code> — ブランチの分岐をグラフ表示</li>
+                 <li><code>--all</code> — 全ブランチを対象に</li>
+                 <li><code>-n 5</code> — 直近 5 件だけ表示</li>
+                 <li><code>--grep="keyword"</code> — メッセージで検索</li>
+               </ul>
+             </div>
+             <div class="col-github">
+               <h4>🔍 特定ファイル・コミットを調査</h4>
+               <ul style="font-size:12.5px;line-height:2.2;margin-top:6px;">
+                 <li><code>git log -- &lt;file&gt;</code> — ファイルの変更履歴</li>
+                 <li><code>git show &lt;hash&gt;</code> — コミットの詳細を確認</li>
+                 <li><code>git blame &lt;file&gt;</code> — 行ごとの最終編集者</li>
+               </ul>
+             </div>
+           </div>
+           <div class="info-box">VSCode: エクスプローラー下部の「<strong>タイムライン</strong>」でファイルの変更履歴を GUI で確認できる。拡張機能「<strong>GitLens</strong>」などのツールを使うとさらに詳細な履歴を確認できる。</div>`,
+        c: `git log --oneline --graph --all  <span class="c"># 全ブランチをグラフ表示（最重要）</span>
+git log -n 5                     <span class="c"># 直近5件</span>
+git log -- &lt;file&gt;                <span class="c"># 特定ファイルの変更履歴</span>
+git log --grep="keyword"         <span class="c"># メッセージで検索</span>
+git show &lt;hash&gt;                  <span class="c"># コミットの詳細確認</span>
+git blame &lt;file&gt;                 <span class="c"># 行ごとの最終編集者を確認</span>` },
+
+      {
+        s: 'Section 3: ローカルリポジトリ操作', t: '.gitignore の設定',
+        b: `<div class="analogy">🙈 <strong>.gitignore</strong> は Git に「このファイルは追跡しないで」と伝える設定ファイル。プロジェクトルートに置き、<strong>最初のコミット前</strong>に作成するのが理想。</div>
+           <div class="two-col" style="margin-top:10px;">
+             <div class="col-git">
+               <h4>📝 記述パターン</h4>
+               <ul style="font-size:12.5px;line-height:2.2;margin-top:6px;">
+                 <li><code>node_modules/</code> — フォルダ全体を除外</li>
+                 <li><code>*.log</code> — 拡張子で一括除外</li>
+                 <li><code>.env</code> — 特定ファイルを除外</li>
+                 <li><code>dist/</code> — ビルド成果物を除外</li>
+                 <li><code>.DS_Store</code> — macOS 自動生成ファイル</li>
+               </ul>
+             </div>
+             <div class="col-github">
+               <h4>🗂 よくある除外対象</h4>
+               <ul style="font-size:12.5px;line-height:2.2;margin-top:6px;">
+                 <li>依存パッケージ（<code>node_modules/</code>）</li>
+                 <li>環境変数・秘密鍵（<code>.env</code>）</li>
+                 <li>ビルド成果物（<code>dist/</code>, <code>build/</code>）</li>
+                 <li>ログファイル（<code>*.log</code>）</li>
+                 <li>OS・エディタの設定ファイル</li>
+               </ul>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ すでに Git が<strong>追跡中のファイル</strong>は .gitignore に追加しても自動的には除外されない。<code>git rm --cached &lt;file&gt;</code> で追跡を解除してから追加すること。</div>
+           <div class="info-box">🌐 <strong>gitignore.io</strong> — 言語・フレームワーク・OS を選ぶと .gitignore テンプレートを自動生成してくれる便利サービス。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> ソース管理パネルで無視したいファイルを右クリック →「.gitignore に追加」で自動的に .gitignore へ追記できる。無視されたファイルはエクスプローラーでグレーアウト表示される。</div>`,
+        c: `<span class="c"># .gitignore の記述例</span>
+node_modules/
+.env
+*.log
+dist/
+.DS_Store
+__pycache__/
+
+git check-ignore -v &lt;file&gt;  <span class="c"># 無視されているか確認</span>
+git rm --cached &lt;file&gt;      <span class="c"># 追跡中のファイルを除外（.gitignore追加後に実行）</span>` },
+
+      // Section 4
+      { type:'section', s:'Section 4', t:'ブランチ・マージ',
+        desc:'ブランチなしのチーム開発は衝突だらけになる。安全に並行作業し、マージでチームの変更を統合する方法を理解する。',
+        topics:['ブランチの基本操作','マージの種類（FF vs 3-way）','マージコンフリクトの解決'] },
+      { s:'Section 4: ブランチ・マージ', t:'ブランチの基本操作',
+        b:`<div class="analogy">🌿 <strong>ブランチ</strong>は「mainに影響を与えない安全な作業コピー」。作成コストが低く、機能・修正ごとに気軽に作れる。Git 2.23以降は <code>git switch</code> を使うのが推奨。</div>
+           <div class="two-col" style="margin-top:10px;">
+             <div class="col-git">
+               <h4>🔍 ブランチとは</h4>
+               <ul style="font-size:12.5px;line-height:2.2;margin-top:6px;">
+                 <li>コミット履歴を指す<strong>軽量なポインタ</strong></li>
+                 <li>作成・削除のコストが非常に低い</li>
+                 <li>mainから分岐して独立した作業ができる</li>
+                 <li>マージ前にコードレビューを受けられる</li>
+               </ul>
+             </div>
+             <div class="col-github">
+               <h4>⚙️ よく使う操作</h4>
+               <ul style="font-size:12.5px;line-height:2.2;margin-top:6px;">
+                 <li><code>git switch -c &lt;name&gt;</code> — 作成して切り替え</li>
+                 <li><code>git switch &lt;name&gt;</code> — 切り替え</li>
+                 <li><code>git branch</code> — 一覧表示</li>
+                 <li><code>git branch -d &lt;name&gt;</code> — 削除（マージ済みのみ）</li>
+                 <li><code>git branch -m &lt;old&gt; &lt;new&gt;</code> — リネーム</li>
+               </ul>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ <code>git checkout</code> は古いコマンド。Git 2.23以降はブランチ切り替えに <code>git switch</code>、ファイル復元に <code>git restore</code> を使うのが推奨。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> ステータスバー左下のブランチ名をクリック → 一覧から選択、または「＋ 新しいブランチの作成」で作成＆切り替えが一度にできる。</div>`,
+        c:`git branch                   <span class="c"># ローカルブランチ一覧</span>
+git branch &lt;name&gt;            <span class="c"># ブランチ作成</span>
+git switch &lt;name&gt;            <span class="c"># ブランチ切り替え</span>
+git switch -c &lt;name&gt;         <span class="c"># 作成して切り替え（最もよく使う）</span>
+git branch -m &lt;old&gt; &lt;new&gt;   <span class="c"># リネーム</span>
+git branch -d &lt;name&gt;        <span class="c"># 削除（マージ済みのみ）</span>
+git branch -D &lt;name&gt;        <span class="c"># 強制削除</span>` },
+
+      { s:'Section 4: ブランチ・マージ', t:'マージの種類',
+        b:`<div class="analogy">🔀 <strong>マージ</strong>は「別の作業ラインをmainに合流させる」操作。状況によって2種類のマージが自動選択される。</div>
+           <svg viewBox="0 0 720 115" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:8px 0 10px;">
+             <rect width="720" height="115" rx="8" fill="#0f172a"/>
+             <line x1="360" y1="8" x2="360" y2="107" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+             <!-- Fast-forward panel -->
+             <rect x="8" y="8" width="344" height="99" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="180" y="27" text-anchor="middle" font-size="10" font-weight="700" fill="#fcd34d" font-family="sans-serif">⚡ Fast-forward マージ</text>
+             <text x="18" y="56" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">main</text>
+             <line x1="48" y1="52" x2="322" y2="52" stroke="#334155" stroke-width="1.5"/>
+             <circle cx="65" cy="52" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="65" y="56" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="140" cy="52" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="140" y="56" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C2</text>
+             <circle cx="215" cy="52" r="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="215" y="56" text-anchor="middle" font-size="8" fill="#c084fc" font-family="sans-serif">C3</text>
+             <circle cx="295" cy="52" r="11" fill="#1d4ed8" stroke="#60a5fa" stroke-width="1.8"/>
+             <text x="295" y="48" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif">C4</text>
+             <text x="295" y="59" text-anchor="middle" font-size="7" fill="#93c5fd" font-family="sans-serif">HEAD</text>
+             <text x="180" y="78" text-anchor="middle" font-size="8.5" fill="#94a3b8" font-family="sans-serif">分岐後にmainが変わっていない場合</text>
+             <text x="180" y="95" text-anchor="middle" font-size="8.5" fill="#64748b" font-family="sans-serif">ポインタが前進するだけ → マージコミット不要</text>
+             <!-- 3-way panel -->
+             <rect x="368" y="8" width="344" height="99" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="540" y="27" text-anchor="middle" font-size="10" font-weight="700" fill="#f97316" font-family="sans-serif">🔀 3-way マージ</text>
+             <text x="378" y="49" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">main</text>
+             <line x1="402" y1="45" x2="695" y2="45" stroke="#334155" stroke-width="1.5"/>
+             <text x="378" y="88" font-size="9" font-weight="700" fill="#c084fc" font-family="sans-serif">feat</text>
+             <line x1="458" y1="82" x2="604" y2="82" stroke="#334155" stroke-width="1.5"/>
+             <line x1="458" y1="45" x2="458" y2="82" stroke="#334155" stroke-width="1" stroke-dasharray="3,2"/>
+             <line x1="604" y1="82" x2="660" y2="45" stroke="#334155" stroke-width="1.5"/>
+             <circle cx="420" cy="45" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="420" y="49" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="458" cy="45" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="458" y="49" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C2</text>
+             <circle cx="562" cy="45" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="562" y="49" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C5</text>
+             <circle cx="660" cy="45" r="11" fill="#1d4ed8" stroke="#60a5fa" stroke-width="1.8"/>
+             <text x="660" y="49" text-anchor="middle" font-size="9" font-weight="700" fill="white" font-family="sans-serif">M</text>
+             <circle cx="511" cy="82" r="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="511" y="86" text-anchor="middle" font-size="8" fill="#c084fc" font-family="sans-serif">C3</text>
+             <circle cx="604" cy="82" r="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="604" y="86" text-anchor="middle" font-size="8" fill="#c084fc" font-family="sans-serif">C4</text>
+             <text x="540" y="100" text-anchor="middle" font-size="8.5" fill="#64748b" font-family="sans-serif">両方に変更あり → マージコミット(M)が作られる</text>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>⚡ Fast-forward</h4>
+               <p style="font-size:12.5px;line-height:1.7;">分岐後にmainに変更がない場合。HEADポインタを前進するだけで完了。マージコミットは作成されず、履歴が直線になる。</p>
+               <p style="font-size:11.5px;line-height:1.6;color:#64748b;margin-top:6px;">👤 一人作業や、チームでも自分が最初にマージする場面で起きやすい。mainが動いていないため衝突の心配がない。</p>
+             </div>
+             <div class="col-github">
+               <h4>🔀 3-way マージ</h4>
+               <p style="font-size:12.5px;line-height:1.7;">mainとfeatureの両方に変更がある場合。共通の祖先を基準に統合し、マージコミット(M)が作成される。ブランチの痕跡が履歴に残る。</p>
+               <p style="font-size:11.5px;line-height:1.6;color:#64748b;margin-top:6px;">👥 複数人開発で、自分が作業している間に誰かがmainを更新していた場合に発生。コンフリクトが起きる可能性がある。</p>
+             </div>
+           </div>
+           <div class="info-box">💡 <code>--no-ff</code> でFF可能でも常にマージコミットを作成できる。<code>--squash</code> でfeatureの全コミットを1つにまとめてマージも可能。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> ソース管理パネル「…」→「ブランチ」→「ブランチをマージ」でマージ先を選択。コンフリクトがなければ自動完了。</div>`,
+        c:`git switch main               <span class="c"># マージ先（main）に切り替え</span>
+git merge &lt;branch&gt;            <span class="c"># ブランチをマージ（自動でFF or 3-way）</span>
+git merge --no-ff &lt;branch&gt;   <span class="c"># マージコミットを強制作成</span>
+git merge --squash &lt;branch&gt;  <span class="c"># 全コミットを1つにまとめてマージ</span>
+git merge --ff-only &lt;branch&gt; <span class="c"># FFのみ許可（不可ならエラー）</span>
+git log --oneline --graph     <span class="c"># マージ結果を確認</span>` },
+
+      { s:'Section 4: ブランチ・マージ', t:'マージコンフリクトの解決',
+        b:`<div class="analogy">⚡ <strong>コンフリクト</strong>は「同じファイルの同じ箇所を2つのブランチで変更した場合」に発生する。Git が自動判断できないため、人間が手動でどちらを採用するか選択する。</div>
+           <ol class="setup-steps" style="margin-top:10px;">
+             <li>
+               <div class="ss-num">1</div>
+               <div class="ss-content">
+                 <h4>マージを実行 → コンフリクト発生</h4>
+                 <p><code>git merge &lt;branch&gt;</code> を実行。コンフリクトが検出されると「CONFLICT」と表示されてマージが中断される。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">2</div>
+               <div class="ss-content">
+                 <h4>コンフリクト箇所を確認・編集</h4>
+                 <p><code>git status</code> で「both modified」なファイルを確認。エディタで開くとコンフリクトマーカーが表示される。どちらの内容を採用するか選択して保存する。</p>
+                 <div class="warn-box" style="margin-top:6px;font-size:11.5px;">
+                   <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> — 現在のブランチの変更<br>
+                   <code>=======</code> — 区切り線<br>
+                   <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature</code> — マージ元ブランチの変更
+                 </div>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">3</div>
+               <div class="ss-content">
+                 <h4>ステージ → コミットで完了</h4>
+                 <p>解消したファイルを <code>git add &lt;file&gt;</code> でステージし、<code>git commit</code> でマージコミットを作成して完了。</p>
+               </div>
+             </li>
+           </ol>
+           <div class="info-box">💡 解決が難しい場合は <code>git merge --abort</code> でマージ前の状態に即座に戻せる。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> コンフリクトファイルを開くと「現在の変更を採用」「受信した変更を採用」「両方を採用」ボタンが表示される。クリックするだけでマーカーが解消される。</div>`,
+        c:`git merge &lt;branch&gt;    <span class="c"># コンフリクト発生</span>
+git status             <span class="c"># "both modified" のファイルを確認</span>
+<span class="c"># エディタでコンフリクトマーカーを解消してから：</span>
+git add &lt;file&gt;         <span class="c"># 解消したファイルをステージ</span>
+git commit             <span class="c"># マージコミットを作成して完了</span>
+git merge --abort      <span class="c"># マージを中断して元に戻す</span>` },
+
+      // Section 5
+      { type:'section', s:'Section 5', t:'リモートリポジトリ',
+        desc:'チームと同期できなければ独り相撲になる。GitHubとのやりとり・fetch/pull/push の使い分け・forkを使ったOSS貢献の流れを学ぶ。',
+        topics:['fetch で確認 → pull で取り込む（使い分け）','プルリクエストの作成','forkを使ったOSS開発フロー'] },
+      { s:'Section 5: リモートリポジトリ', t:'リモートの基本操作（push / fetch / pull）',
+        b:`<div class="analogy">☁️ <strong>リモートリポジトリ</strong>はチーム全員が参照・更新できるクラウド上の共有リポジトリ。<code>clone</code>すると自動的に <strong>origin</strong> という名前で登録される。</div>
+           <svg viewBox="0 0 720 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:6px 0 8px;">
+             <rect width="720" height="100" rx="8" fill="#0f172a"/>
+             <rect x="10" y="18" width="220" height="64" rx="6" fill="#1e293b" stroke="#4ade80" stroke-width="1.5"/>
+             <text x="120" y="38" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4ade80" font-family="sans-serif">💻 ローカルリポジトリ</text>
+             <rect x="28" y="46" width="56" height="24" rx="4" fill="#166534" stroke="#4ade80" stroke-width="1"/>
+             <text x="56" y="62" text-anchor="middle" font-size="8" fill="#4ade80" font-family="sans-serif">作業Dir</text>
+             <rect x="94" y="46" width="56" height="24" rx="4" fill="#1e3a5f" stroke="#60a5fa" stroke-width="1"/>
+             <text x="122" y="62" text-anchor="middle" font-size="8" fill="#60a5fa" font-family="sans-serif">ローカル</text>
+             <rect x="160" y="46" width="56" height="24" rx="4" fill="#312e81" stroke="#a78bfa" stroke-width="1"/>
+             <text x="188" y="62" text-anchor="middle" font-size="8" fill="#a78bfa" font-family="sans-serif">Staging</text>
+             <rect x="490" y="18" width="220" height="64" rx="6" fill="#1e293b" stroke="#f97316" stroke-width="1.5" stroke-dasharray="5,3"/>
+             <text x="600" y="38" text-anchor="middle" font-size="9.5" font-weight="700" fill="#fb923c" font-family="sans-serif">🐙 GitHub (origin)</text>
+             <rect x="530" y="46" width="140" height="24" rx="4" fill="#1c1917" stroke="#f97316" stroke-width="1"/>
+             <text x="600" y="62" text-anchor="middle" font-size="8" fill="#fb923c" font-family="sans-serif">リモートリポジトリ</text>
+             <line x1="230" y1="42" x2="480" y2="30" stroke="#f97316" stroke-width="1.8" marker-end="url(#aorange)"/>
+             <text x="355" y="30" text-anchor="middle" font-size="9" font-weight="700" fill="#f97316" font-family="sans-serif">push ↑</text>
+             <line x1="480" y1="68" x2="230" y2="76" stroke="#4ade80" stroke-width="1.8" marker-end="url(#agreen)"/>
+             <text x="355" y="88" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">pull（fetch + merge）↓　／　fetch（情報取得のみ・作業Dirは変えない）</text>
+             <defs>
+               <marker id="aorange" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f97316"/></marker>
+               <marker id="agreen"  markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4ade80"/></marker>
+             </defs>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>🔍 fetch（安全に確認してからマージ）</h4>
+               <p style="font-size:12px;line-height:1.7;">リモートの変更情報だけ取得し、作業ディレクトリは変更しない。<code>origin/main</code> に格納されるので、差分を確認してから <code>git merge origin/main</code> で反映できる。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">👤 「pull したら上書きされた！」を防ぎたいときに使う。</p>
+             </div>
+             <div class="col-github">
+               <h4>⬇️ pull（作業開始前の必須習慣）</h4>
+               <p style="font-size:12px;line-height:1.7;">fetch + merge を一度に実行。作業開始前に必ず実行してリモートの最新を取り込む。コンフリクトが発生した場合はマージコンフリクトと同じ手順で解決する。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">👥 チーム開発では pull を怠ると大量コンフリクトの原因になる。</p>
+             </div>
+           </div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> ソース管理パネルの「…」→「プル」「プッシュ」「フェッチ」から操作可能。ステータスバーの ↓↑ アイコンをクリックしても同期できる。</div>`,
+        c:`git remote -v                   <span class="c"># リモート一覧とURL確認</span>
+git fetch origin                 <span class="c"># 情報のみ取得（作業Dirに影響なし）</span>
+git log origin/main --oneline    <span class="c"># fetchした内容を確認</span>
+git diff origin/main             <span class="c"># リモートとの差分確認</span>
+git merge origin/main            <span class="c"># 確認後にローカルへ反映</span>
+git pull origin main             <span class="c"># fetch + merge を一括実行</span>
+git pull --rebase                <span class="c"># マージコミットを作らずに取り込む</span>` },
+
+      { s:'Section 5: リモートリポジトリ', t:'プルリクエスト（PR）の作成',
+        b:`<div class="analogy">📋 <strong>プルリクエスト（PR）</strong>は「このブランチをmainにマージしてください」という依頼書。レビューを受けてからマージするチーム開発の要。CI/CDと連携すると自動テストもPRで実行できる。</div>
+           <ol class="setup-steps" style="margin-top:10px;">
+             <li>
+               <div class="ss-num">1</div>
+               <div class="ss-content">
+                 <h4>作業ブランチをリモートにpush</h4>
+                 <p><code>git push -u origin feature/xxx</code> で初回push。以降は <code>git push</code> のみでOK。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">2</div>
+               <div class="ss-content">
+                 <h4>GitHub上でPRを作成</h4>
+                 <p>push後にGitHubを開くと「Compare & pull request」バナーが表示される。<strong>base: main ← compare: feature/xxx</strong> を確認してタイトル・説明を書いて送信。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">3</div>
+               <div class="ss-content">
+                 <h4>レビュー → 承認 → マージ</h4>
+                 <p>レビュアーがコードを確認。修正依頼があれば同ブランチに追加コミットしてpushすれば自動的にPRへ反映される。承認後に「Merge pull request」でマージ。</p>
+               </div>
+             </li>
+           </ol>
+           <div class="info-box">💡 PRタイトルは何をしたか一言で。本文には背景・変更理由・確認ポイントを書くとレビュアーに親切。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> 「GitHub Pull Requests」拡張機能をインストールするとVSCode内でPRの作成・レビュー・マージまで完結できる。</div>`,
+        c:`<span class="c"># 1. 作業ブランチをpush（初回は -u で上流設定）</span>
+git push -u origin feature/xxx
+<span class="c"># 2. 以降のpush</span>
+git push
+<span class="c"># 3. GitHub上でPR作成（GUI操作）</span>
+<span class="c">#    base: main ← compare: feature/xxx</span>
+<span class="c"># 4. マージ後にローカルを最新化・ブランチ削除</span>
+git switch main
+git pull
+git branch -d feature/xxx` },
+
+      { s:'Section 5: リモートリポジトリ', t:'forkを使った開発フロー',
+        b:`<div class="analogy">🍴 <strong>fork</strong>はリポジトリを自分のGitHubアカウントへ丸ごとコピーする操作。OSSへの貢献やチーム外からのPRに使う。fork元リポジトリを <strong>upstream</strong> と呼ぶのが慣例。</div>
+           <svg viewBox="0 0 720 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:6px 0 8px;">
+             <rect width="720" height="100" rx="8" fill="#0f172a"/>
+             <rect x="10" y="12" width="190" height="58" rx="6" fill="#1e293b" stroke="#f97316" stroke-width="1.5"/>
+             <text x="105" y="32" text-anchor="middle" font-size="9" font-weight="700" fill="#fb923c" font-family="sans-serif">upstream</text>
+             <text x="105" y="48" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">オリジナルリポジトリ</text>
+             <text x="105" y="62" text-anchor="middle" font-size="9" fill="#64748b" font-family="sans-serif">（OSSや組織リポジトリ）</text>
+             <rect x="265" y="12" width="190" height="58" rx="6" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5"/>
+             <text x="360" y="32" text-anchor="middle" font-size="9" font-weight="700" fill="#93c5fd" font-family="sans-serif">origin（自分のfork）</text>
+             <text x="360" y="48" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">自分のGitHubアカウント上の</text>
+             <text x="360" y="62" text-anchor="middle" font-size="9" fill="#64748b" font-family="sans-serif">コピーリポジトリ</text>
+             <rect x="520" y="12" width="190" height="58" rx="6" fill="#1e293b" stroke="#4ade80" stroke-width="1.5"/>
+             <text x="615" y="32" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">ローカル</text>
+             <text x="615" y="48" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">手元の開発環境</text>
+             <text x="615" y="62" text-anchor="middle" font-size="9" fill="#64748b" font-family="sans-serif">cloneして作業する</text>
+             <line x1="200" y1="38" x2="255" y2="38" stroke="#a78bfa" stroke-width="1.5" marker-end="url(#afork-p)"/>
+             <text x="228" y="32" text-anchor="middle" font-size="9" fill="#a78bfa" font-family="sans-serif">fork</text>
+             <line x1="455" y1="38" x2="510" y2="38" stroke="#4ade80" stroke-width="1.5" marker-end="url(#afork-g)"/>
+             <text x="483" y="32" text-anchor="middle" font-size="9" fill="#4ade80" font-family="sans-serif">clone</text>
+             <path d="M615,12 Q615,4 360,4 Q265,4 265,12" stroke="#60a5fa" stroke-width="1.2" fill="none" stroke-dasharray="3,2" marker-end="url(#afork-b)"/>
+             <text x="490" y="10" text-anchor="middle" font-size="9" fill="#60a5fa" font-family="sans-serif">push</text>
+             <path d="M265,70 Q265,84 105,84 Q105,78 105,70" stroke="#f97316" stroke-width="1.2" fill="none" stroke-dasharray="3,2" marker-end="url(#afork-o)"/>
+             <text x="185" y="94" text-anchor="middle" font-size="9" fill="#f97316" font-family="sans-serif">PR</text>
+             <path d="M105,70 Q105,92 615,92 Q615,84 615,70" stroke="#fcd34d" stroke-width="1.2" fill="none" stroke-dasharray="3,2" marker-end="url(#afork-y)"/>
+             <text x="380" y="99" text-anchor="middle" font-size="9" fill="#fcd34d" font-family="sans-serif">fetch upstream（最新を取り込む）</text>
+             <defs>
+               <marker id="afork-p" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#a78bfa"/></marker>
+               <marker id="afork-g" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#4ade80"/></marker>
+               <marker id="afork-b" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#60a5fa"/></marker>
+               <marker id="afork-o" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#f97316"/></marker>
+               <marker id="afork-y" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#fcd34d"/></marker>
+             </defs>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>🔧 fork開発の手順</h4>
+               <ol style="font-size:12px;line-height:2.1;padding-left:16px;margin:0;">
+                 <li>GitHubでupstreamをfork</li>
+                 <li>自分のfork(origin)をclone</li>
+                 <li><code>git remote add upstream &lt;url&gt;</code> で登録</li>
+                 <li>作業ブランチで変更・commit・push to origin</li>
+                 <li>originからupstreamへPRを作成</li>
+               </ol>
+             </div>
+             <div class="col-github">
+               <h4>🔄 upstreamを最新に保つ</h4>
+               <p style="font-size:12px;line-height:1.7;">upstreamに他者のPRがマージされると自分のforkが古くなる。作業開始前に必ずupstreamの最新を取り込んでからブランチを切る習慣が重要。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">👥 放置するとコンフリクトが大量発生するので注意。</p>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ upstreamの更新を長期間放置するとコンフリクトが大量発生する。こまめに <code>git fetch upstream && git merge upstream/main</code> を実行しよう。</div>`,
+        c:`git remote add upstream &lt;original-url&gt;  <span class="c"># upstream登録</span>
+git remote -v                              <span class="c"># origin + upstream を確認</span>
+git fetch upstream                         <span class="c"># upstream の最新を取得</span>
+git switch main
+git merge upstream/main                    <span class="c"># mainを最新に更新</span>
+git push origin main                       <span class="c"># 自分のforkにも反映</span>
+git switch -c feature/xxx
+git push origin feature/xxx               <span class="c"># originにpush後、upstreamへPR</span>` },
+
+      // 基礎まとめ ハンズオン
+      { s:'基礎まとめ: ハンズオン', t:'実際にやってみよう',
+        b:`<div class="analogy">🚀 Sections 1〜5 で学んだ基礎を<strong>実際に手を動かして確認</strong>しよう。clone → ブランチ作成 → 編集・コミットを繰り返し、PR を送るまでの一連の流れを体験する。</div>
+           <svg viewBox="0 0 720 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:8px 0 10px;">
+             <rect width="720" height="80" rx="8" fill="#0f172a"/>
+             <!-- ① clone -->
+             <rect x="10" y="10" width="85" height="26" rx="13" fill="#0c2040" stroke="#60a5fa" stroke-width="1.2"/>
+             <text x="52" y="27" text-anchor="middle" font-size="9.5" font-weight="700" fill="#60a5fa" font-family="sans-serif">① clone</text>
+             <line x1="97" y1="23" x2="121" y2="23" stroke="#475569" stroke-width="1.5"/>
+             <polygon points="121,19 127,23 121,27" fill="#475569"/>
+             <!-- ② branch作成 -->
+             <rect x="129" y="10" width="105" height="26" rx="13" fill="#1e0a40" stroke="#c084fc" stroke-width="1.2"/>
+             <text x="181" y="27" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c084fc" font-family="sans-serif">② branch 作成</text>
+             <line x1="236" y1="23" x2="260" y2="23" stroke="#475569" stroke-width="1.5"/>
+             <polygon points="260,19 266,23 260,27" fill="#475569"/>
+             <!-- ③ 編集 -->
+             <rect x="268" y="10" width="72" height="26" rx="13" fill="#1e0a40" stroke="#c084fc" stroke-width="1.2"/>
+             <text x="304" y="27" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c084fc" font-family="sans-serif">③ 編集</text>
+             <line x1="342" y1="23" x2="366" y2="23" stroke="#475569" stroke-width="1.5"/>
+             <polygon points="366,19 372,23 366,27" fill="#475569"/>
+             <!-- ④ add→commit -->
+             <rect x="374" y="10" width="112" height="26" rx="13" fill="#1e0a40" stroke="#c084fc" stroke-width="1.2"/>
+             <text x="430" y="27" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c084fc" font-family="sans-serif">④ add → commit</text>
+             <line x1="488" y1="23" x2="512" y2="23" stroke="#475569" stroke-width="1.5"/>
+             <polygon points="512,19 518,23 512,27" fill="#475569"/>
+             <!-- ⑤ push -->
+             <rect x="520" y="10" width="76" height="26" rx="13" fill="#0c2040" stroke="#60a5fa" stroke-width="1.2"/>
+             <text x="558" y="27" text-anchor="middle" font-size="9.5" font-weight="700" fill="#60a5fa" font-family="sans-serif">⑤ push</text>
+             <line x1="598" y1="23" x2="620" y2="23" stroke="#475569" stroke-width="1.5"/>
+             <polygon points="620,19 626,23 620,27" fill="#475569"/>
+             <!-- ⑥ PR作成 -->
+             <rect x="628" y="10" width="82" height="26" rx="13" fill="#0a1f10" stroke="#4ade80" stroke-width="1.2"/>
+             <text x="669" y="27" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4ade80" font-family="sans-serif">⑥ PR 作成</text>
+             <!-- Repeat arc: right of ④ → down → left → up to left of ③ -->
+             <path d="M 486,37 Q 486,62 377,62 Q 268,62 268,37" fill="none" stroke="#c084fc" stroke-width="1.5" stroke-dasharray="4,3"/>
+             <polygon points="262,50 268,37 274,50" fill="#c084fc"/>
+             <text x="377" y="74" text-anchor="middle" font-size="8" fill="#c084fc" fill-opacity="0.8" font-family="sans-serif">③④ を納得いくまで繰り返す</text>
+           </svg>
+           <div class="hs-grid">
+             <div class="hs-card hs-blue">
+               <div class="hs-badge">① CLONE</div>
+               <h5>リポジトリを複製</h5>
+               <p>Ctrl+Shift+P →「Git: Clone」→ URL を貼り付け → 保存先フォルダを選択してVSCodeで開く</p>
+             </div>
+             <div class="hs-card hs-purple">
+               <div class="hs-badge">② BRANCH 作成</div>
+               <h5>作業ブランチを作成</h5>
+               <p>ステータスバー左下のブランチ名をクリック →「＋ 新しいブランチを作成」→ 名前を入力（例: <code style="font-size:10px;">feature/add-menu</code>）</p>
+             </div>
+             <div class="hs-card hs-purple">
+               <div class="hs-badge">③ ファイル編集</div>
+               <h5>ファイルを編集・保存</h5>
+               <p>エクスプローラーからファイルを開いて編集。Ctrl+S で保存するとソース管理パネルに「M」バッジが付く。</p>
+             </div>
+             <div class="hs-card hs-purple">
+               <div class="hs-badge">④ ADD → COMMIT　　←③④ を繰り返す→</div>
+               <h5>ステージ＆コミット</h5>
+               <p>ソース管理パネルで変更ファイルの「＋」をクリックしてステージ → メッセージを入力 →「✓ コミット」</p>
+               <p class="hs-sub">変更が完了するまで ③→④ を繰り返す</p>
+             </div>
+             <div class="hs-card hs-blue">
+               <div class="hs-badge">⑤ PUSH</div>
+               <h5>GitHub に送信</h5>
+               <p>初回:「ブランチのパブリッシュ」ボタン<br>2回目以降: ステータスバーの「↑」または「変更の同期」ボタン</p>
+             </div>
+             <div class="hs-card hs-green">
+               <div class="hs-badge">⑥ PR 作成</div>
+               <h5>プルリクエストを送信</h5>
+               <p>GitHub.com →「Compare &amp; pull request」→ タイトル・説明を記入 →「Create pull request」で送信</p>
+             </div>
+           </div>
+           <div class="info-box">💡 commit は<strong>小さい単位で複数回</strong>行うのがコツ。1つの論理的な変更ごとにコミットすると、後からの追跡・revert が楽になる。</div>`,
+        c:`<span class="c"># ① Clone</span>
+git clone &lt;url&gt;
+
+<span class="c"># ② ブランチ作成</span>
+git switch -c feature/my-feature
+
+<span class="c"># ③④ 編集 → add → commit（何度でも繰り返す）</span>
+git add &lt;file&gt;                      <span class="c"># または git add .</span>
+git status                           <span class="c"># 状態を確認</span>
+git commit -m "変更内容を説明するメッセージ"
+
+<span class="c"># ⑤ push</span>
+git push -u origin feature/my-feature
+
+<span class="c"># ⑥ GitHub.com でプルリクエストを作成・送信</span>` },
+
+      // ブランチ可視化（インタラクティブ）
+      { type:'branch-viz' },
+
+      // Section 6
+      { type:'section', s:'Section 6', t:'Rebase', adv:true,
+        desc:'mergeだけでは履歴が複雑に膨れ上がる。コミット履歴を整理するrebaseの仕組みと、mergeとの使い分けを理解する。',
+        topics:['rebaseの基本（merge vs rebase）','rebase時のコンフリクト解決','pull --rebase・interactive rebase'] },
+      { s:'Section 6: Rebase', t:'rebaseの基本（merge vs rebase）',
+        b:`<div class="analogy">🌱 <strong>rebase</strong>は「ブランチの根っこをmainの先端に植え替える」操作。mergeと違いマージコミットが作られず、履歴が一直線になる。</div>
+           <svg viewBox="0 0 720 115" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:6px 0 8px;">
+             <rect width="720" height="115" rx="8" fill="#0f172a"/>
+             <line x1="360" y1="8" x2="360" y2="107" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+             <!-- Left: merge -->
+             <rect x="8" y="8" width="344" height="99" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="180" y="27" text-anchor="middle" font-size="10" font-weight="700" fill="#f97316" font-family="sans-serif">🔀 merge（分岐の痕跡が残る）</text>
+             <text x="18" y="55" font-size="8.5" font-weight="700" fill="#4ade80" font-family="sans-serif">main</text>
+             <line x1="46" y1="51" x2="322" y2="51" stroke="#334155" stroke-width="1.5"/>
+             <circle cx="65" cy="51" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="65" y="55" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="105" cy="51" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="105" y="55" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C2</text>
+             <circle cx="185" cy="51" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="185" y="55" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C5</text>
+             <circle cx="295" cy="51" r="11" fill="#1d4ed8" stroke="#60a5fa" stroke-width="1.8"/>
+             <text x="295" y="48" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif">M</text>
+             <text x="295" y="58" text-anchor="middle" font-size="7" fill="#93c5fd" font-family="sans-serif">merge</text>
+             <line x1="105" y1="51" x2="105" y2="87" stroke="#334155" stroke-width="1" stroke-dasharray="3,2"/>
+             <line x1="105" y1="87" x2="225" y2="87" stroke="#334155" stroke-width="1.5"/>
+             <line x1="225" y1="87" x2="295" y2="51" stroke="#334155" stroke-width="1.5"/>
+             <text x="18" y="91" font-size="8.5" font-weight="700" fill="#c084fc" font-family="sans-serif">feat</text>
+             <circle cx="145" cy="87" r="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="145" y="91" text-anchor="middle" font-size="8" fill="#c084fc" font-family="sans-serif">C3</text>
+             <circle cx="225" cy="87" r="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="225" y="91" text-anchor="middle" font-size="8" fill="#c084fc" font-family="sans-serif">C4</text>
+             <text x="180" y="110" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">マージコミット(M)で合流</text>
+             <!-- Right: rebase -->
+             <rect x="368" y="8" width="344" height="99" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="540" y="27" text-anchor="middle" font-size="10" font-weight="700" fill="#fcd34d" font-family="sans-serif">📏 rebase（一直線の履歴）</text>
+             <line x1="385" y1="57" x2="700" y2="57" stroke="#334155" stroke-width="1.5"/>
+             <circle cx="403" cy="57" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="403" y="61" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="453" cy="57" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="453" y="61" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C2</text>
+             <circle cx="523" cy="57" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="523" y="61" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C5</text>
+             <circle cx="608" cy="57" r="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="608" y="61" text-anchor="middle" font-size="8" fill="#c084fc" font-family="sans-serif">C3'</text>
+             <circle cx="683" cy="57" r="10" fill="#1e293b" stroke="#7c3aed" stroke-width="1.5"/>
+             <text x="683" y="61" text-anchor="middle" font-size="8" fill="#c084fc" font-family="sans-serif">C4'</text>
+             <text x="540" y="85" text-anchor="middle" font-size="8.5" fill="#94a3b8" font-family="sans-serif">C3・C4 が C5 の後に付け替えられた（C3'・C4'）</text>
+             <text x="540" y="101" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">マージコミット不要・履歴が一直線</text>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>📏 rebase を選ぶとき</h4>
+               <p style="font-size:12px;line-height:1.7;">PRをマージする前にmainの最新を取り込んで履歴を整理したいとき。<code>git switch feature</code> → <code>git rebase main</code> でfeatureブランチの根っこをmainの先端に移す。</p>
+             </div>
+             <div class="col-github">
+               <h4>🔀 merge を選ぶとき</h4>
+               <p style="font-size:12px;line-height:1.7;">「いつ誰がどのブランチをマージしたか」の記録を明示的に残したいとき。チームのルールに従う。GitHubのPRマージはデフォルトでmergeコミットを作る。</p>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ <strong>push済みのコミットをrebaseしてはいけない。</strong>他の開発者のリポジトリと履歴が食い違い、強制pushが必要になる。rebaseは<strong>ローカルのみのブランチ</strong>で使う。</div>`,
+        c:`git switch feature
+git rebase main              <span class="c"># mainの先端をベースに付け替え</span>
+git switch main
+git merge feature            <span class="c"># rebase後はFF mergeできる</span>
+git rebase -i HEAD~3         <span class="c"># 直近3コミットを対話的に整理</span>
+<span class="c"># interactive: pick / reword / squash / drop</span>` },
+
+      { s:'Section 6: Rebase', t:'rebase時のコンフリクト解決',
+        b:`<div class="analogy">⚡ rebaseはコミットを1つずつ再適用するため、コミット数分だけコンフリクトが起きる可能性がある。mergeと違い<strong>1コミットごとに解消→continueを繰り返す</strong>のがポイント。</div>
+           <ol class="setup-steps" style="margin-top:10px;">
+             <li>
+               <div class="ss-num">1</div>
+               <div class="ss-content">
+                 <h4>rebase実行 → コンフリクト発生</h4>
+                 <p><code>git rebase main</code> を実行すると、コンフリクトがある時点で処理が止まる。<code>git status</code> で "both modified" のファイルを確認する。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">2</div>
+               <div class="ss-content">
+                 <h4>コンフリクトを解消 → ステージ</h4>
+                 <p>エディタでコンフリクト箇所を編集して解消する。解消後は <code>git add &lt;file&gt;</code> でステージング。<strong><code>git commit</code> は不要</strong>（continueが代わりに行う）。</p>
+               </div>
+             </li>
+             <li>
+               <div class="ss-num">3</div>
+               <div class="ss-content">
+                 <h4>--continue で次のコミットへ進む</h4>
+                 <p><code>git rebase --continue</code> で次のコミットの再適用に進む。コミットが複数ある場合はステップ2〜3を繰り返す。全コミットが完了するとrebase終了。</p>
+               </div>
+             </li>
+           </ol>
+           <div class="warn-box">⚠️ <code>git rebase --abort</code> でrebase開始前の状態に完全に戻せる。困ったら迷わず中断しよう。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> rebaseのコンフリクトもマージコンフリクトと同じUIで解消できる。「現在の変更を採用」「受信した変更を採用」ボタンが利用可能。</div>`,
+        c:`git rebase main              <span class="c"># コンフリクトが起きると処理停止</span>
+git status                   <span class="c"># "both modified" を確認</span>
+<span class="c"># エディタでコンフリクト箇所を編集・解消</span>
+git add &lt;file&gt;
+git rebase --continue        <span class="c"># 次のコミットへ（commit不要）</span>
+git rebase --skip            <span class="c"># このコミットをスキップ</span>
+git rebase --abort           <span class="c"># rebaseを中断して元に戻す</span>` },
+
+      { s:'Section 6: Rebase', t:'pull --rebase と interactive rebase',
+        b:`<div class="analogy">🧹 rebaseには2つの実用的な使い方がある。チームの最新を取り込む <strong>pull --rebase</strong> と、コミット履歴を整理する <strong>rebase -i</strong>（interactive rebase）。</div>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>⬇️ pull --rebase</h4>
+               <p style="font-size:12px;line-height:1.7;">通常の <code>git pull</code>（fetch + merge）の代わりに fetch + rebase で取り込む。マージコミットが作られないため、履歴が一直線に保たれる。チームで「pullはrebaseで」とルール化されていることも多い。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">👥 毎回 <code>--rebase</code> を付けるのが面倒なら設定で固定できる。</p>
+             </div>
+             <div class="col-github">
+               <h4>✂️ interactive rebase（rebase -i）</h4>
+               <p style="font-size:12px;line-height:1.7;">PRを送る前にコミット履歴を整理したいときに使う。エディタが開き、各コミットに対して操作を指定できる。</p>
+               <ul style="font-size:11.5px;line-height:1.8;padding-left:14px;margin:4px 0 0;">
+                 <li><code>pick</code>　— そのまま残す</li>
+                 <li><code>reword</code> — メッセージだけ変更</li>
+                 <li><code>squash</code> — 前のコミットと1つにまとめる</li>
+                 <li><code>drop</code>　— 削除する</li>
+               </ul>
+             </div>
+           </div>
+           <div class="info-box">💡 squash でWIP（作業途中）コミットをまとめてからPRを出すと、レビュアーが変更内容を把握しやすくなる。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> GitLens拡張の「Commits」ビューからinteractive rebaseをGUI操作できる。コマンドに慣れてきたら試してみよう。</div>`,
+        c:`git pull --rebase origin main           <span class="c"># fetch + rebase で取り込む</span>
+git config pull.rebase true             <span class="c"># このリポジトリの設定</span>
+git config --global pull.rebase true   <span class="c"># グローバル設定</span>
+git rebase -i HEAD~3                   <span class="c"># 直近3コミットを整理</span>
+git rebase -i HEAD~5                   <span class="c"># 直近5コミットを整理</span>
+<span class="c"># エディタで pick / reword / squash / drop を指定</span>` },
+
+      // Section 7
+      { type:'section', s:'Section 7', t:'Stash', adv:true,
+        desc:'「急に別の対応が必要になった」は日常茶飯事。作業途中の変更をstashに退避して、コミットせず安全にブランチを切り替えよう。',
+        topics:['stash基本操作（push・pop・apply）','stash応用（オプション・複数管理）'] },
+      { s:'Section 7: Stash', t:'stashの基本操作',
+        b:`<div class="analogy">📦 <strong>stash</strong>は「作業机の引き出し」。コミット前の変更を一時退避して、別の緊急作業に対応できる。stashはスタック構造で複数保持できる。</div>
+           <svg viewBox="0 0 720 100" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:6px 0 8px;">
+             <rect width="720" height="100" rx="8" fill="#0f172a"/>
+             <!-- 左: 作業ディレクトリ -->
+             <rect x="10" y="10" width="290" height="80" rx="6" fill="#1e293b" stroke="#f97316" stroke-width="1.5"/>
+             <text x="155" y="30" text-anchor="middle" font-size="9.5" font-weight="700" fill="#fb923c" font-family="sans-serif">💻 作業ディレクトリ</text>
+             <text x="155" y="50" text-anchor="middle" font-size="8.5" fill="#94a3b8" font-family="sans-serif">① 編集中・未コミットの変更あり</text>
+             <text x="155" y="67" text-anchor="middle" font-size="8.5" fill="#94a3b8" font-family="sans-serif">④ pop/apply で変更が戻ってくる</text>
+             <text x="155" y="82" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">→ 同じ作業ディレクトリに復元される</text>
+             <!-- 右: stash スタック -->
+             <rect x="420" y="10" width="290" height="80" rx="6" fill="#1e293b" stroke="#a78bfa" stroke-width="1.5"/>
+             <text x="565" y="30" text-anchor="middle" font-size="9.5" font-weight="700" fill="#c084fc" font-family="sans-serif">📦 stash スタック</text>
+             <rect x="436" y="37" width="258" height="15" rx="3" fill="#312e81" stroke="#a78bfa" stroke-width="0.8"/>
+             <text x="445" y="48" font-size="8" fill="#c084fc" font-family="sans-serif">② 💾 ログイン画面の編集中ファイル一式</text>
+             <rect x="436" y="55" width="258" height="15" rx="3" fill="#1e1b4b" stroke="#7c3aed" stroke-width="0.8"/>
+             <text x="445" y="66" font-size="8" fill="#a78bfa" font-family="sans-serif">　💾 スタイル調整中のファイル一式</text>
+             <rect x="436" y="73" width="258" height="12" rx="3" fill="#0f0e1a" stroke="#4c1d95" stroke-width="0.8"/>
+             <text x="565" y="82" text-anchor="middle" font-size="7.5" fill="#6d28d9" font-family="sans-serif">（複数積み重ねられる）</text>
+             <!-- 上矢印: WD → stash (push) -->
+             <line x1="308" y1="38" x2="412" y2="38" stroke="#f97316" stroke-width="1.8" marker-end="url(#as-o)"/>
+             <text x="360" y="33" text-anchor="middle" font-size="8.5" font-weight="700" fill="#f97316" font-family="sans-serif">② git stash →</text>
+             <!-- 下矢印: stash → WD (pop/apply) -->
+             <line x1="412" y1="68" x2="308" y2="68" stroke="#4ade80" stroke-width="1.8" marker-end="url(#as-g)"/>
+             <text x="360" y="83" text-anchor="middle" font-size="8.5" font-weight="700" fill="#4ade80" font-family="sans-serif">← ④ git stash pop</text>
+             <!-- 中央ラベル: ③ -->
+             <text x="360" y="55" text-anchor="middle" font-size="8" fill="#64748b" font-family="sans-serif">③ 別ブランチで作業</text>
+             <defs>
+               <marker id="as-o" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#f97316"/></marker>
+               <marker id="as-g" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4ade80"/></marker>
+             </defs>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>🗑 pop（取り出して削除）</h4>
+               <p style="font-size:12px;line-height:1.7;">退避した変更を取り出し、stashの一覧からも消える。「一時退避 → 戻す」という通常の使い方はこちら。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">💡 取り出した変更と今の編集内容が衝突した場合は、stashは消えずに残る。</p>
+             </div>
+             <div class="col-github">
+               <h4>📌 apply（取り出して保持）</h4>
+               <p style="font-size:12px;line-height:1.7;">退避した変更を取り出すが、stashの一覧にも残したままにできる。同じ変更を複数のブランチで試したいときに便利。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">💡 使い終わったら「削除」コマンドで一覧を整理しよう。</p>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ <code>git stash apply</code> 時に現在の変更と衝突するとコンフリクトが発生する。<code>git status</code> で "both modified" を確認し、マージコンフリクトと同じ手順で解消 → <code>git add</code> で完了。</div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> ソース管理パネルの「…」→「変更を隠す（Stash）」から操作可能。「隠した変更をポップする」でpopもできる。</div>`,
+        c:`git stash                         <span class="c"># 追跡中ファイルの変更を退避</span>
+git stash list                    <span class="c"># stash一覧を確認</span>
+git stash pop                     <span class="c"># 最新を取り出して削除</span>
+git stash apply stash@{1}        <span class="c"># 番号指定で取り出す（保持）</span>
+git stash drop                    <span class="c"># 最新のstashを削除</span>
+git stash clear                   <span class="c"># 全stashを削除</span>` },
+
+      { s:'Section 7: Stash', t:'stashの応用（オプション・複数管理）',
+        b:`<div class="analogy">🗂 デフォルトの stash は「Gitが追跡しているファイルの変更」のみ退避する。新規ファイルや設定ファイルも一緒に退避したいときはオプションを指定する。</div>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>📁 何を退避するか選べる</h4>
+               <ul style="font-size:12px;line-height:2.1;padding-left:14px;margin:0;">
+                 <li><strong>デフォルト</strong> — Gitが知っているファイルの変更だけ</li>
+                 <li><strong>新規ファイルも含む</strong><br>　まだ一度も追加していない新しいファイルも退避<br>　<span style="font-size:10.5px;color:#64748b;">（例: 作りかけの新しいコンポーネント）</span></li>
+                 <li><strong>全ファイルを含む</strong><br>　.gitignoreで無視されているファイルも含めて全て退避<br>　<span style="font-size:10.5px;color:#64748b;">（例: .envなどの設定ファイルも）</span></li>
+               </ul>
+             </div>
+             <div class="col-github">
+               <h4>🏷 メモを付けて複数管理</h4>
+               <p style="font-size:12px;line-height:1.7;">stashを何度も積み重ねると、どれが何の変更か分からなくなる。退避するときに一言メモを付けておくと、後で見たときに内容が一目でわかる。</p>
+               <ul style="font-size:11.5px;line-height:2;padding-left:14px;margin:6px 0 0;">
+                 <li>💾 <em>ログイン機能の編集中ファイル</em></li>
+                 <li>💾 <em>スタイル調整中のファイル一式</em></li>
+               </ul>
+               <p style="font-size:10.5px;color:#64748b;margin-top:4px;">→ 一覧から内容を確認して取り出せる</p>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ 「全ファイルを含む」オプションは、パスワードや認証情報が入った設定ファイルも退避対象になる。意図せず巻き込まないよう注意しよう。</div>
+           <div class="info-box">💡 stashはあくまで一時退避用。長期間放置すると何の変更か分からなくなる。コミットできる状態になったら早めにコミットする習慣を。</div>`,
+        c:`git stash -u                              <span class="c"># 未追跡ファイルも含める</span>
+git stash -a                              <span class="c"># ignoredファイルも含む全て</span>
+git stash push -m "ログイン機能WIP"       <span class="c"># メッセージ付きで退避</span>
+git stash list                            <span class="c"># 一覧（メッセージ付きで表示）</span>
+git stash apply stash@{1}                <span class="c"># 番号指定で適用</span>
+git stash drop stash@{1}                 <span class="c"># 番号指定で削除</span>` },
+
+      // Section 8
+      { type:'section', s:'Section 8', t:'Tag', adv:true,
+        desc:'バージョンを管理しないと「どのコードをリリースしたか」が追えなくなる。タグでリリースの節目を記録し、特定バージョンへ素早くアクセスする。',
+        topics:['軽量タグ vs 注釈付きタグ','過去コミットへのタグ付け・push・checkout'] },
+      { s:'Section 8: Tag', t:'タグの基本（軽量タグ vs 注釈付きタグ）',
+        b:`<div class="analogy">🏷 <strong>タグ</strong>はコミット履歴に貼る「付箋」。リリースのタイミングを記録し、後から「v1.0 の時点のコード」をすぐに参照できるようにする。</div>
+           <svg viewBox="0 0 720 82" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:6px 0 8px;">
+             <rect width="720" height="82" rx="8" fill="#0f172a"/>
+             <line x1="20" y1="60" x2="700" y2="60" stroke="#334155" stroke-width="1.5"/>
+             <!-- commits -->
+             <circle cx="55"  cy="60" r="9" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="55"  y="64" text-anchor="middle" font-size="7.5" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="155" cy="60" r="9" fill="#1e293b" stroke="#4ade80" stroke-width="2"/>
+             <text x="155" y="64" text-anchor="middle" font-size="7.5" fill="#4ade80" font-family="sans-serif">C2</text>
+             <circle cx="270" cy="60" r="9" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="270" y="64" text-anchor="middle" font-size="7.5" fill="#94a3b8" font-family="sans-serif">C3</text>
+             <circle cx="390" cy="60" r="9" fill="#1e293b" stroke="#4ade80" stroke-width="2"/>
+             <text x="390" y="64" text-anchor="middle" font-size="7.5" fill="#4ade80" font-family="sans-serif">C4</text>
+             <circle cx="490" cy="60" r="9" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="490" y="64" text-anchor="middle" font-size="7.5" fill="#94a3b8" font-family="sans-serif">C5</text>
+             <circle cx="600" cy="60" r="9" fill="#1e293b" stroke="#f97316" stroke-width="2"/>
+             <text x="600" y="64" text-anchor="middle" font-size="7.5" fill="#fb923c" font-family="sans-serif">C6</text>
+             <circle cx="680" cy="60" r="10" fill="#1d4ed8" stroke="#60a5fa" stroke-width="1.8"/>
+             <text x="680" y="57" text-anchor="middle" font-size="7.5" fill="white" font-family="sans-serif">C7</text>
+             <text x="680" y="67" text-anchor="middle" font-size="6.5" fill="#93c5fd" font-family="sans-serif">HEAD</text>
+             <!-- tag labels -->
+             <rect x="118" y="12" width="74" height="18" rx="4" fill="#166534" stroke="#4ade80" stroke-width="1"/>
+             <text x="155" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">🏷 v1.0</text>
+             <line x1="155" y1="30" x2="155" y2="50" stroke="#4ade80" stroke-width="1" stroke-dasharray="2,2"/>
+             <rect x="353" y="12" width="74" height="18" rx="4" fill="#166534" stroke="#4ade80" stroke-width="1"/>
+             <text x="390" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#4ade80" font-family="sans-serif">🏷 v1.1</text>
+             <line x1="390" y1="30" x2="390" y2="50" stroke="#4ade80" stroke-width="1" stroke-dasharray="2,2"/>
+             <rect x="563" y="12" width="74" height="18" rx="4" fill="#7c2d12" stroke="#f97316" stroke-width="1"/>
+             <text x="600" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="#fb923c" font-family="sans-serif">🏷 v2.0</text>
+             <line x1="600" y1="30" x2="600" y2="50" stroke="#f97316" stroke-width="1" stroke-dasharray="2,2"/>
+             <text x="600" y="78" text-anchor="middle" font-size="7.5" fill="#f97316" font-family="sans-serif">注釈付き（推奨）</text>
+             <text x="270" y="78" text-anchor="middle" font-size="7.5" fill="#64748b" font-family="sans-serif">タグなし = リリースではない通常コミット</text>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>🪶 軽量タグ</h4>
+               <p style="font-size:12px;line-height:1.7;">コミットに名前を貼るだけのシンプルなタグ。作成者・日時などの情報は記録されない。個人的なメモや一時的なマークに使う。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">👤 「ここまで動いた」という個人メモ程度の用途向け。</p>
+             </div>
+             <div class="col-github">
+               <h4>📋 注釈付きタグ（公式リリースに推奨）</h4>
+               <p style="font-size:12px;line-height:1.7;">タグ名に加えて、リリースメモ・作成者・作成日時も一緒に記録できる。GitHubのリリース機能と連携しやすく、チームでの公式リリースには必ずこちらを使う。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">👥 「v2.0 リリース」などの節目には注釈付きタグを。</p>
+             </div>
+           </div>
+           <div class="info-box">🖥 <strong>VSCode:</strong> GitLens拡張の「Tags」ビューでタグの一覧確認・作成・削除が可能。タグをクリックすると該当コミットの内容を参照できる。</div>`,
+        c:`git tag v1.0                          <span class="c"># 軽量タグを作成（現在のコミットに）</span>
+git tag -a v2.0 -m "メジャーリリース"  <span class="c"># 注釈付きタグを作成</span>
+git tag                                <span class="c"># タグ一覧</span>
+git show v2.0                          <span class="c"># タグの詳細（注釈・日時など）を確認</span>
+git tag -d v1.0                        <span class="c"># ローカルのタグを削除</span>` },
+
+      { s:'Section 8: Tag', t:'タグの活用（過去コミット・push・checkout）',
+        b:`<div class="analogy">📌 タグは「今いるコミット」だけでなく、過去のコミットにさかのぼって付けることもできる。またタグは通常の push では送られないため、リモートへの共有は別途必要。</div>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>⏮ 過去のコミットにタグを付ける</h4>
+               <p style="font-size:12px;line-height:1.7;">リリース後に「あのときのコミットがv1.0だった」と気づいた場合でも、過去のコミットを指定してタグを付けられる。まずコミット履歴を確認して、対象のコミットを特定する。</p>
+               <h4 style="margin-top:10px;">☁️ タグをリモートに共有する</h4>
+               <p style="font-size:12px;line-height:1.7;">タグは通常の <code>git push</code> では送信されない。チームと共有するには、タグを作成した後に別途 push が必要。全タグをまとめて送ることもできる。</p>
+             </div>
+             <div class="col-github">
+               <h4>🔍 タグを指定して過去のコードを見る</h4>
+               <p style="font-size:12px;line-height:1.7;">「v1.0 時点のコードを確認したい」ときにタグを指定して切り替えられる。ただしこの状態は <strong>detached HEAD</strong>（HEAD がブランチを指さず、直接コミットを指している状態）と呼ばれ、そのまま編集するとコミットが迷子になる危険がある。</p>
+               <p style="font-size:12px;line-height:1.7;margin-top:6px;">コードを確認するだけならOK。編集する場合は新しいブランチを作成してから作業する。</p>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ タグを指定して切り替えた状態（detached HEAD）でコミットしてもブランチに紐づかないため、後から参照できなくなる。編集作業をする場合は必ずブランチを作成すること。</div>`,
+        c:`git log --oneline                      <span class="c"># 過去のコミットを確認</span>
+git tag v1.0 &lt;コミットのハッシュ&gt;      <span class="c"># 過去コミットにタグを付ける</span>
+git push origin v2.0                   <span class="c"># 特定のタグをリモートに送る</span>
+git push origin --tags                 <span class="c"># 全タグをまとめて送る</span>
+git push origin --delete v1.0          <span class="c"># リモートのタグを削除</span>
+git switch --detach v1.0               <span class="c"># タグ時点のコードを確認（読み取り専用推奨）</span>
+git switch -c hotfix/v1.0 v1.0        <span class="c"># タグからブランチを作成して編集</span>` },
+
+      // Section 9
+      { type:'section', s:'Section 9', t:'応用・運用', adv:true,
+        desc:'個人の使いこなしだけでなく、チーム全体のルールが開発品質を左右する。ブランチ戦略の選び方とコミットを安全に取り消すテクニックを学ぶ。',
+        topics:['git-flow vs GitHub flow','コミットの取り消し（revert vs reset）'] },
+      { s:'Section 9: 応用・運用', t:'git-flow と GitHub flow の比較',
+        b:`<div class="analogy">🗺 チームでどうブランチを運用するかを決めたルールが<strong>ブランチ戦略</strong>。代表的な2つのモデルを理解して、プロジェクトに合った方を選ぶ。</div>
+           <svg viewBox="0 0 720 108" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:6px 0 8px;">
+             <rect width="720" height="108" rx="8" fill="#0f172a"/>
+             <line x1="360" y1="8" x2="360" y2="100" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+             <!-- Left: git-flow -->
+             <rect x="8" y="8" width="344" height="92" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="180" y="26" text-anchor="middle" font-size="9.5" font-weight="700" fill="#fcd34d" font-family="sans-serif">📐 git-flow（大規模・定期リリース向け）</text>
+             <rect x="22" y="33" width="316" height="9" rx="3" fill="#1d4ed8"/>
+             <text x="30" y="41" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">main　— 本番リリース済みの安定コード</text>
+             <rect x="22" y="46" width="316" height="9" rx="3" fill="#166534"/>
+             <text x="30" y="54" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">develop　— 開発中の統合ブランチ</text>
+             <rect x="22" y="59" width="220" height="9" rx="3" fill="#4c1d95"/>
+             <text x="30" y="67" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">feature/xxx　— 機能ごとの作業ブランチ</text>
+             <rect x="22" y="72" width="160" height="9" rx="3" fill="#78350f"/>
+             <text x="30" y="80" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">release/x.x　— リリース準備ブランチ</text>
+             <rect x="22" y="85" width="110" height="9" rx="3" fill="#7f1d1d"/>
+             <text x="30" y="93" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">hotfix　— 緊急バグ修正</text>
+             <!-- Right: GitHub flow -->
+             <rect x="368" y="8" width="344" height="92" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="540" y="26" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4ade80" font-family="sans-serif">🌿 GitHub flow（継続デリバリー向け）</text>
+             <rect x="382" y="38" width="316" height="9" rx="3" fill="#1d4ed8"/>
+             <text x="390" y="46" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">main　— 常にデプロイ可能な状態を保つ</text>
+             <rect x="382" y="58" width="240" height="9" rx="3" fill="#4c1d95"/>
+             <text x="390" y="66" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">feature/xxx　— PRでmainにマージ</text>
+             <text x="540" y="88" text-anchor="middle" font-size="8.5" fill="#4ade80" font-family="sans-serif">ブランチはこの2種類のみ・シンプル</text>
+             <text x="540" y="100" text-anchor="middle" font-size="7.5" fill="#64748b" font-family="sans-serif">マージしたらすぐデプロイが前提</text>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>📐 git-flow を選ぶとき</h4>
+               <p style="font-size:12px;line-height:1.7;">リリースのタイミングが決まっており、複数バージョンを並行管理する必要があるプロジェクト。モバイルアプリや大規模なエンタープライズ開発に向いている。</p>
+             </div>
+             <div class="col-github">
+               <h4>🌿 GitHub flow を選ぶとき</h4>
+               <p style="font-size:12px;line-height:1.7;">Webサービスのように「常にデプロイできる状態」を保ちたいプロジェクト。ルールがシンプルなので小中規模チームや学習にも最適。</p>
+             </div>
+           </div>
+           <div class="info-box">💡 迷ったらまず GitHub flow から始めよう。チームが大きくなりリリース管理が複雑になってきたら git-flow を検討する。</div>`,
+        c:`<span class="c"># GitHub flow の基本サイクル</span>
+git switch -c feature/xxx         <span class="c"># 機能ブランチを作成</span>
+<span class="c"># ... 開発・コミット ...</span>
+git push -u origin feature/xxx    <span class="c"># リモートにpush</span>
+<span class="c"># PR作成 → レビュー → mainにマージ → デプロイ</span>
+git switch main && git pull       <span class="c"># mainを最新に更新</span>
+git branch -d feature/xxx         <span class="c"># 不要になったブランチを削除</span>` },
+
+      { s:'Section 9: 応用・運用', t:'コミットの取り消し（revert vs reset）',
+        b:`<div class="info-box" style="margin-bottom:8px;">📌 <strong>「取り消し」コマンドの使い分け：</strong><br>
+           <span style="display:inline-block;margin-top:4px;font-size:11px;line-height:1.8;">
+             <code>git restore</code> — <strong>コミット前</strong>の変更を取り消す（Section 3）<br>
+             <code>git revert</code> &nbsp;— <strong>コミット済み</strong>の変更を「打ち消しコミット」で安全に戻す<br>
+             <code>git reset</code> &nbsp;&nbsp;— <strong>コミット済み</strong>の変更を「履歴ごと巻き戻す」（強力・要注意）
+           </span></div>
+           <div class="analogy">↩️ コミットの取り消しには2つの方法がある。<strong>revert</strong>は「打ち消しコミットを追加する安全な方法」、<strong>reset</strong>は「履歴ごと巻き戻す強力な方法」。使い分けが重要。</div>
+           <svg viewBox="0 0 720 105" xmlns="http://www.w3.org/2000/svg" style="width:100%;border-radius:8px;margin:6px 0 8px;">
+             <rect width="720" height="105" rx="8" fill="#0f172a"/>
+             <line x1="360" y1="8" x2="360" y2="97" stroke="#334155" stroke-width="1" stroke-dasharray="3,3"/>
+             <!-- Left: revert -->
+             <rect x="8" y="8" width="344" height="89" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="180" y="26" text-anchor="middle" font-size="9.5" font-weight="700" fill="#4ade80" font-family="sans-serif">✅ revert（安全・履歴は残る）</text>
+             <line x1="28" y1="55" x2="322" y2="55" stroke="#334155" stroke-width="1.5"/>
+             <circle cx="55"  cy="55" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="55"  y="59" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="120" cy="55" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="120" y="59" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C2</text>
+             <circle cx="190" cy="55" r="10" fill="#1e293b" stroke="#ef4444" stroke-width="2"/>
+             <text x="190" y="52" text-anchor="middle" font-size="8" fill="#f87171" font-family="sans-serif">C3</text>
+             <text x="190" y="62" text-anchor="middle" font-size="7" fill="#ef4444" font-family="sans-serif">バグ</text>
+             <circle cx="278" cy="55" r="11" fill="#166534" stroke="#4ade80" stroke-width="2"/>
+             <text x="278" y="52" text-anchor="middle" font-size="7.5" font-weight="700" fill="white" font-family="sans-serif">C4</text>
+             <text x="278" y="62" text-anchor="middle" font-size="6.5" fill="#4ade80" font-family="sans-serif">revert</text>
+             <text x="180" y="80" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C3の内容を打ち消すC4を追加</text>
+             <text x="180" y="93" text-anchor="middle" font-size="7.5" fill="#64748b" font-family="sans-serif">C3は履歴に残る → チーム開発でも安全</text>
+             <!-- Right: reset -->
+             <rect x="368" y="8" width="344" height="89" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+             <text x="540" y="26" text-anchor="middle" font-size="9.5" font-weight="700" fill="#f97316" font-family="sans-serif">⚠️ reset（強力・履歴が消える）</text>
+             <line x1="388" y1="55" x2="620" y2="55" stroke="#334155" stroke-width="1.5"/>
+             <circle cx="415" cy="55" r="10" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+             <text x="415" y="59" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">C1</text>
+             <circle cx="490" cy="55" r="11" fill="#1d4ed8" stroke="#60a5fa" stroke-width="2"/>
+             <text x="490" y="52" text-anchor="middle" font-size="8" font-weight="700" fill="white" font-family="sans-serif">C2</text>
+             <text x="490" y="62" text-anchor="middle" font-size="6.5" fill="#93c5fd" font-family="sans-serif">HEAD</text>
+             <circle cx="580" cy="55" r="10" fill="#1e293b" stroke="#ef4444" stroke-width="1.5" opacity="0.3"/>
+             <text x="580" y="59" text-anchor="middle" font-size="8" fill="#f87171" fill-opacity="0.4" font-family="sans-serif">C3</text>
+             <line x1="568" y1="44" x2="592" y2="66" stroke="#ef4444" stroke-width="2" opacity="0.6"/>
+             <line x1="592" y1="44" x2="568" y2="66" stroke="#ef4444" stroke-width="2" opacity="0.6"/>
+             <text x="540" y="80" text-anchor="middle" font-size="8" fill="#94a3b8" font-family="sans-serif">HEADをC2に戻しC3を削除</text>
+             <text x="540" y="93" text-anchor="middle" font-size="7.5" fill="#64748b" font-family="sans-serif">push済みのコミットには絶対使わない</text>
+           </svg>
+           <div class="two-col">
+             <div class="col-git">
+               <h4>✅ revert — 安全な取り消し</h4>
+               <p style="font-size:12px;line-height:1.7;">「このコミットで壊れた」という内容を打ち消す新しいコミットを作る。元のコミットは履歴に残るので、チーム共有リポジトリでも安全に使える。</p>
+               <p style="font-size:11px;color:#64748b;margin-top:4px;">👥 push済みのコミットを取り消すときはこちら。</p>
+             </div>
+             <div class="col-github">
+               <h4>⚠️ reset — 強力な巻き戻し</h4>
+               <p style="font-size:12px;line-height:1.7;">履歴を書き換えて指定コミット以降をなかったことにする。3段階の強さがある。<strong>push済みのコミットには絶対に使わない</strong>こと。</p>
+               <ul style="font-size:11.5px;line-height:1.9;padding-left:14px;margin:4px 0 0;">
+                 <li><strong>--soft</strong>　— コミットだけ取り消す（変更はステージに残る）</li>
+                 <li><strong>--mixed</strong> — ステージも取り消す（変更は手元に残る）<span style="color:#94a3b8;font-size:11px;"> ← デフォルト・省略可</span></li>
+                 <li><strong>--hard</strong>　— 変更ごと全て削除。元に戻せない</li>
+               </ul>
+             </div>
+           </div>
+           <div class="warn-box">⚠️ <strong>--hard</strong> は取り消した変更が完全に消える。push済みのブランチで使うと他のメンバーのリポジトリと履歴が食い違い、大混乱を招く。迷ったら revert を使おう。</div>`,
+        c:`git revert HEAD                   <span class="c"># 直前のコミットを安全に取り消し</span>
+git revert &lt;hash&gt;                 <span class="c"># 指定コミットを取り消す新コミット</span>
+git reset --soft HEAD~1           <span class="c"># コミットのみ取り消し（変更はステージに残る）</span>
+git reset --mixed HEAD~1          <span class="c"># ステージも取り消し（変更は手元に残る）</span>
+git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に戻せない・要注意）</span>` },
+    ];
+
+    let cur = 0;
+    const total = S.length;
+
+    // ===== Branch Visualization =====
+    const bvizSteps = [
+      {
+        cmd: null,
+        btn: '① 初期状態',
+        title: '① 初期状態',
+        desc: 'main ブランチに 3 つのコミット。HEAD は main を指し、最新の C3 を示している。',
+        tracks: ['main'],
+        commits: [
+          {id:'C1', x:120, y:110, col:'#2563eb'},
+          {id:'C2', x:240, y:110, col:'#2563eb'},
+          {id:'C3', x:360, y:110, col:'#2563eb'},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
+        tags: [{text:'HEAD→main', x:382, y:102, col:'#f59e0b'}],
+      },
+      {
+        cmd: 'git switch -c feature',
+        btn: '② branch 作成',
+        title: '② feature ブランチを作成',
+        desc: 'C3 の地点から feature ブランチが生えた。HEAD が feature に切り替わる。',
+        tracks: ['main','feature'],
+        commits: [
+          {id:'C1', x:120, y:110, col:'#2563eb'},
+          {id:'C2', x:240, y:110, col:'#2563eb'},
+          {id:'C3', x:360, y:110, col:'#6366f1'},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
+        tags: [
+          {text:'main',         x:382, y:96,  col:'#3b82f6'},
+          {text:'HEAD→feature', x:382, y:116, col:'#f59e0b'},
+        ],
+      },
+      {
+        cmd: 'git commit',
+        btn: '③ commit (C4)',
+        title: '③ feature でコミット（C4）',
+        desc: 'feature ブランチだけが進んだ。main は C3 のまま動かない。',
+        tracks: ['main','feature'],
+        commits: [
+          {id:'C1', x:100, y:110, col:'#2563eb'},
+          {id:'C2', x:210, y:110, col:'#2563eb'},
+          {id:'C3', x:320, y:110, col:'#2563eb'},
+          {id:'C4', x:440, y:175, col:'#a855f7', isNew:true},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'}],
+        tags: [
+          {text:'main',         x:342, y:102, col:'#3b82f6'},
+          {text:'HEAD→feature', x:462, y:168, col:'#f59e0b'},
+        ],
+      },
+      {
+        cmd: 'git commit',
+        btn: '④ commit (C5)',
+        title: '④ feature でもう 1 コミット（C5）',
+        desc: '2 つのブランチが並行して進んでいる。これがブランチを使う醍醐味。',
+        tracks: ['main','feature'],
+        commits: [
+          {id:'C1', x:80,  y:110, col:'#2563eb'},
+          {id:'C2', x:185, y:110, col:'#2563eb'},
+          {id:'C3', x:290, y:110, col:'#2563eb'},
+          {id:'C4', x:390, y:175, col:'#a855f7'},
+          {id:'C5', x:510, y:175, col:'#a855f7', isNew:true},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
+        tags: [
+          {text:'main',         x:312, y:102, col:'#3b82f6'},
+          {text:'HEAD→feature', x:532, y:168, col:'#f59e0b'},
+        ],
+      },
+      {
+        cmd: 'git switch main',
+        btn: '⑤ switch main',
+        title: '⑤ main に切り替え',
+        desc: 'HEAD が main に戻った。作業ディレクトリの内容も C3 時点のファイルに切り替わる。',
+        tracks: ['main','feature'],
+        commits: [
+          {id:'C1', x:80,  y:110, col:'#2563eb'},
+          {id:'C2', x:185, y:110, col:'#2563eb'},
+          {id:'C3', x:290, y:110, col:'#2563eb'},
+          {id:'C4', x:390, y:175, col:'#a855f7'},
+          {id:'C5', x:510, y:175, col:'#a855f7'},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
+        tags: [
+          {text:'HEAD→main', x:312, y:102, col:'#f59e0b'},
+          {text:'feature',   x:532, y:168, col:'#a855f7'},
+        ],
+      },
+      {
+        cmd: 'git merge feature',
+        btn: '⑥ merge',
+        title: '⑥ feature を main にマージ',
+        desc: 'C6（マージコミット）が作成され、2 本の履歴が合流。main が C6 に進んだ。',
+        tracks: ['main','feature'],
+        commits: [
+          {id:'C1', x:65,  y:110, col:'#2563eb'},
+          {id:'C2', x:163, y:110, col:'#2563eb'},
+          {id:'C3', x:261, y:110, col:'#2563eb'},
+          {id:'C4', x:352, y:175, col:'#a855f7'},
+          {id:'C5', x:453, y:175, col:'#a855f7'},
+          {id:'C6', x:573, y:110, col:'#10b981', isNew:true},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'C5'},{f:'C3',t:'C6'},{f:'C5',t:'C6'}],
+        tags: [
+          {text:'feature',   x:475, y:168, col:'#a855f7'},
+          {text:'HEAD→main', x:595, y:102, col:'#f59e0b'},
+        ],
+      },
+      {
+        cmd: '（比較）rebase を使ったら？',
+        btn: '⑦ rebase 比較',
+        title: '⑦ rebase なら履歴が一直線になる',
+        desc: 'rebase を使うとマージコミットが作られず、一直線の履歴になる。詳しくは次の Section 6 へ。',
+        tracks: ['main'],
+        commits: [
+          {id:'C1',  x:65,  y:110, col:'#2563eb'},
+          {id:'C2',  x:160, y:110, col:'#2563eb'},
+          {id:'C3',  x:255, y:110, col:'#2563eb'},
+          {id:"C4'", x:350, y:110, col:'#f97316'},
+          {id:"C5'", x:445, y:110, col:'#f97316'},
+        ],
+        edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:"C4'"},{f:"C4'",t:"C5'"}],
+        tags: [{text:'HEAD→main', x:467, y:102, col:'#f59e0b'}],
+        note: "🟠 C4'・C5' はオレンジ = rebase で植え替えられたコミット。内容は同じだがハッシュが変わる。",
+      },
+    ];
+
+    let bvizStep = 0;
+
+    function bvizNav(d) {
+      bvizStep = Math.max(0, Math.min(bvizSteps.length - 1, bvizStep + d));
+      bvizRender();
+    }
+    function bvizJump(idx) { bvizStep = idx; bvizRender(); }
+    function bvizReset() { bvizStep = 0; bvizRender(); }
+
+    function bvizRender() {
+      const step = bvizSteps[bvizStep];
+      const g = id => document.getElementById(id);
+      const sa = g('bviz-svg-area');    if (sa) sa.innerHTML = bvizSVG(step);
+      const tb = g('bviz-title-bar');   if (tb) tb.textContent = step.title;
+      const ct = g('bviz-cmd-text');    if (ct) ct.textContent = step.cmd ? ' ' + step.cmd : ' （初期状態）';
+      const dt = g('bviz-desc-text');   if (dt) dt.textContent = step.desc;
+      const nt = g('bviz-note');        if (nt) { nt.textContent = step.note || ''; nt.style.display = step.note ? '' : 'none'; }
+      const pb = g('bviz-prev');        if (pb) pb.disabled = bvizStep === 0;
+      const nb = g('bviz-next');        if (nb) nb.disabled = bvizStep === bvizSteps.length - 1;
+      const dots = g('bviz-dots');
+      if (dots) {
+        dots.innerHTML = bvizSteps.map((_, idx) => {
+          const cls = idx === bvizStep ? 'active' : idx < bvizStep ? 'done' : '';
+          return `<span class="bviz-dot${cls ? ' ' + cls : ''}" onclick="bvizJump(${idx})" title="ステップ ${idx + 1}"></span>`;
+        }).join('');
+      }
+      const sb = g('bviz-step-bar');
+      if (sb) {
+        sb.innerHTML = bvizSteps.map((s, idx) => {
+          const cls = idx === bvizStep ? 'active' : idx < bvizStep ? 'done' : '';
+          return `<button class="bviz-step-tag${cls ? ' ' + cls : ''}" onclick="bvizJump(${idx})">${s.btn}</button>`;
+        }).join('');
+      }
+    }
+
+    function bvizSVG(step) {
+      const W = 720, H = 215, R = 16;
+      const pos = {};
+      step.commits.forEach(c => { pos[c.id] = c; });
+      const TY = {main:110, feature:175};
+      const TC = {main:'#2563eb', feature:'#7c3aed'};
+
+      let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">` +
+        `<rect width="${W}" height="${H}" rx="8" fill="#0f172a"/>`;
+
+      (step.tracks || ['main']).forEach(tr => {
+        const ty = TY[tr];
+        s += `<rect x="4" y="${ty - 14}" width="712" height="28" rx="14" fill="${TC[tr]}" fill-opacity="0.12"/>`;
+        s += `<text x="14" y="${ty + 5}" font-size="9" font-weight="700" fill="${TC[tr]}" fill-opacity="0.6" font-family="sans-serif">${tr}</text>`;
+      });
+
+
+      step.edges.forEach(e => {
+        const f = pos[e.f], t = pos[e.t];
+        if (!f || !t) return;
+        const dx = t.x - f.x, dy = t.y - f.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 1) return;
+        const ux = dx / d, uy = dy / d;
+        s += `<line x1="${(f.x + ux * (R + 2)).toFixed(1)}" y1="${(f.y + uy * (R + 2)).toFixed(1)}" ` +
+          `x2="${(t.x - ux * (R + 2)).toFixed(1)}" y2="${(t.y - uy * (R + 2)).toFixed(1)}" ` +
+          `stroke="#475569" stroke-width="2.5" stroke-linecap="round"/>`;
+      });
+
+      step.commits.forEach(c => {
+        if (c.isNew) s += `<circle cx="${c.x}" cy="${c.y}" r="${R + 5}" fill="none" stroke="${c.col}" stroke-width="1.5" opacity="0.5"/>`;
+        s += `<circle cx="${c.x}" cy="${c.y}" r="${R}" fill="${c.col}"/>`;
+        const fs = c.id.length > 2 ? '8' : '9.5';
+        s += `<text x="${c.x}" y="${c.y + 4}" text-anchor="middle" font-size="${fs}" font-weight="700" fill="#fff" font-family="sans-serif">${c.id}</text>`;
+      });
+
+      (step.tags || []).forEach(tag => {
+        const tw = Math.ceil(tag.text.length * 7.5 + 14);
+        s += `<rect x="${tag.x}" y="${tag.y}" width="${tw}" height="17" rx="8" fill="${tag.col}" fill-opacity="0.2" stroke="${tag.col}" stroke-width="1.2"/>`;
+        s += `<text x="${(tag.x + tw / 2).toFixed(1)}" y="${tag.y + 11}" text-anchor="middle" font-size="9.5" font-weight="700" fill="${tag.col}" font-family="sans-serif">${tag.text}</text>`;
+      });
+
+      s += '</svg>';
+      return s;
+    }
+    // ===== End Branch Visualization =====
+
+    function render(i) {
+      const slide = S[i];
+      const app = document.getElementById('app');
+      if (slide.type === 'title') {
+        const contentCount = S.filter(s => !s.type).length;
+        app.innerHTML = `
+      <div class="slide-title">
+        <div class="label">STUDY GUIDE</div>
+        <h1>Git 学習資料</h1>
+        <p class="sub">9 セクション &nbsp;·&nbsp; ${contentCount} スライド</p>
+        <p class="hint">→ キーまたはボタンで次へ進む</p>
+      </div>`;
+      } else if (slide.type === 'section') {
+        const advBadge = slide.adv ? `<div class="sec-adv-badge">🔧 応用セクション — ここからは応用的な使い方</div>` : '';
+        const topics = (slide.topics || []).map(t => `<span class="sec-topic">${t}</span>`).join('');
+        app.innerHTML = `
+      <div class="slide-section${slide.adv ? ' adv' : ''}">
+        <div style="position:absolute;top:16px;right:20px;font-size:11px;color:#475569;">${i} / ${total - 1}</div>
+        ${advBadge}
+        <div class="sec-label">${slide.s}</div>
+        <h1>${slide.t}</h1>
+        <p class="sec-desc">${slide.desc}</p>
+        <div class="sec-topics">${topics}</div>
+      </div>`;
+      } else if (slide.type === 'branch-viz') {
+        bvizStep = 0;
+        app.innerHTML = `
+      <div class="slide-content">
+        <div class="slide-header">
+          <span class="section-badge" style="background:#0891b2;">インタラクティブ</span>
+          <span class="slide-counter">${i} / ${total - 1}</span>
+        </div>
+        <div class="bviz-wrap">
+          <div class="bviz-title-bar" id="bviz-title-bar"></div>
+          <div class="bviz-svg-area" id="bviz-svg-area"></div>
+          <div class="bviz-legend">
+            <span class="bviz-leg bviz-leg-main">● main</span>
+            <span class="bviz-leg bviz-leg-feature">● feature</span>
+            <span class="bviz-leg bviz-leg-merge">● merge コミット</span>
+            <span class="bviz-leg bviz-leg-rebase">● rebase コミット</span>
+            <span class="bviz-leg bviz-leg-head">▬ HEAD（現在位置）</span>
+          </div>
+          <div class="bviz-terminal">
+            <div class="bviz-term-chrome"><span></span><span></span><span></span></div>
+            <div class="bviz-term-body"><span class="bviz-cmd-prompt">$</span><span id="bviz-cmd-text"></span><span class="bviz-cursor">▊</span></div>
+          </div>
+          <div class="bviz-desc-bar" id="bviz-desc-text"></div>
+          <div id="bviz-note" class="bviz-note-bar" style="display:none;"></div>
+          <div class="bviz-controls">
+            <button id="bviz-prev" class="bviz-btn" onclick="bvizNav(-1)" disabled>◀ 前へ</button>
+            <div id="bviz-dots" class="bviz-dots"></div>
+            <button id="bviz-next" class="bviz-btn next" onclick="bvizNav(1)">次のステップ ▶</button>
+            <button class="bviz-btn rst" onclick="bvizReset()" title="リセット">↺</button>
+          </div>
+          <div id="bviz-step-bar" class="bviz-step-bar"></div>
+          <div class="bviz-hint-bar">← → キーで操作できます</div>
+        </div>
+      </div>`;
+        bvizRender();
+      } else {
+        app.innerHTML = `
+      <div class="slide-content">
+        <div class="slide-header">
+          <span class="section-badge" style="${/Section [6-9]/.test(slide.s) ? 'background:#c2410c;' : ''}">${slide.s}</span>
+          <span class="slide-counter">${i} / ${total - 1}</span>
+        </div>
+        <div class="slide-main">
+          <h2>${slide.t}</h2>
+          ${slide.b}
+        </div>
+        <div class="cheatsheet">
+          <div class="cs-label">Command Reference — VSCode が裏で実行するコマンド</div>
+          <div class="cs-body"><pre><code>${slide.c}</code></pre></div>
+        </div>
+      </div>`;
+      }
+      document.getElementById('prevBtn').disabled = (i === 0);
+      document.getElementById('nextBtn').disabled = (i === total - 1);
+      document.getElementById('bar').style.width = `${(i / (total - 1)) * 100}%`;
+    }
+
+    function nav(d) {
+      const n = cur + d;
+      if (n >= 0 && n < total) { cur = n; render(cur); }
+    }
+
+    document.addEventListener('keydown', e => {
+      const onBviz = S[cur] && S[cur].type === 'branch-viz';
+      if (onBviz && (e.key === 'ArrowRight' || e.key === 'ArrowDown') && bvizStep < bvizSteps.length - 1) { bvizNav(1); return; }
+      if (onBviz && (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   && bvizStep > 0)                   { bvizNav(-1); return; }
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nav(1);
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  nav(-1);
+    });
+
+    render(0);
+  </script>
+</body>
+
+</html>
