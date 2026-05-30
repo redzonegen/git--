@@ -2397,7 +2397,7 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
           {id:'WIP',x:420, y:110, col:'#f59e0b', ghost:true},
         ],
         edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'WIP',ghost:true}],
-        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        tags: [{text:'HEAD→main', x:312, y:102, col:'#f59e0b'}],
         note: '退避後は作業ディレクトリがクリーンになる。複数回 stash でスタック管理可能（stash@{0}, stash@{1}...）。',
       },
       {
@@ -2413,7 +2413,7 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
           {id:'WIP',x:420, y:110, col:'#f59e0b', ghost:true, isNew:true},
         ],
         edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'WIP',ghost:true}],
-        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        tags: [{text:'HEAD→main', x:312, y:102, col:'#f59e0b'}],
         note: 'apply との違い：apply はスタックに残す。pop は取り出して削除。コンフリクト時は手動解決が必要。',
       },
       {
@@ -2429,7 +2429,7 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
           {id:'C4', x:400, y:110, col:'#2563eb', ghost:true},
         ],
         edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4',ghost:true}],
-        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        tags: [{text:'HEAD→main', x:312, y:102, col:'#f59e0b'}],
         note: '--soft: ステージに保持 ／ --mixed（デフォルト）: 作業ディレクトリに保持 ／ --hard: 完全削除',
       },
       {
@@ -2444,7 +2444,7 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
           {id:'C3', x:290, y:110, col:'#2563eb'},
         ],
         edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'}],
-        tags: [{text:'HEAD→main', x:249, y:102, col:'#f59e0b'}],
+        tags: [{text:'HEAD→main', x:312, y:102, col:'#f59e0b'}],
         note: '⚠️ --hard は取り消せない。push 済みコミットへの使用は危険。安全に戻すには git revert を使う。',
       },
       {
@@ -2461,7 +2461,7 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
           {id:'Rv', x:480, y:110, col:'#10b981', isNew:true},
         ],
         edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:'C4'},{f:'C4',t:'Rv'}],
-        tags: [{text:'HEAD→main', x:439, y:102, col:'#f59e0b'}],
+        tags: [{text:'HEAD→main', x:502, y:102, col:'#f59e0b'}],
         note: 'reset と違い revert は履歴を書き換えない。push 済みコミットの取り消しに最適。',
       },
       {
@@ -2480,8 +2480,8 @@ git reset --hard HEAD~1           <span class="c"># 変更ごと削除（元に�
         ],
         edges: [{f:'C1',t:'C2'},{f:'C2',t:'C3'},{f:'C3',t:"C4'"},{f:'C3',t:'C4'},{f:'C4',t:'C5'}],
         tags: [
-          {text:'HEAD→main', x:344, y:102, col:'#f59e0b'},
-          {text:'feature',    x:447, y:168, col:'#a855f7'},
+          {text:'HEAD→main', x:407, y:102, col:'#f59e0b'},
+          {text:'feature',    x:502, y:168, col:'#a855f7'},
         ],
         note: "🟠 C4' = C4 の内容をコピーした別コミット（ハッシュは異なる）。マージとは違い、feature との結合点は作らない。",
       },
